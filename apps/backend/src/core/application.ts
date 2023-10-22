@@ -8,8 +8,9 @@ import { DependencyInjectionContainerFactory } from '../libs/dependencyInjection
 import { type DependencyInjectionModule } from '../libs/dependencyInjection/dependencyInjectionModule.js';
 import { LoggerServiceFactory } from '../libs/logger/factories/loggerServiceFactory/loggerServiceFactory.js';
 import { type LoggerService } from '../libs/logger/services/loggerService/loggerService.js';
-import { AuthModule } from '../modules/authModule/authModule.js';
-import { UserModule } from '../modules/userModule/userModule.js';
+import { type UuidService } from '../libs/uuid/services/uuidService/uuidService.js';
+import { UuidServiceImpl } from '../libs/uuid/services/uuidService/uuidServiceImpl.js';
+import { UrlModule } from '../modules/urlModule/urlModule.js';
 
 export class Application {
   public static createContainer(): DependencyInjectionContainer {
@@ -26,7 +27,7 @@ export class Application {
     const loggerLevel = ConfigProvider.getLoggerLevel();
 
     const modules: DependencyInjectionModule[] = [
-      new UserModule({
+      new UrlModule({
         hashSaltRounds,
       }),
     ];
@@ -34,6 +35,8 @@ export class Application {
     const container = DependencyInjectionContainerFactory.create({ modules });
 
     container.bind<LoggerService>(symbols.loggerService, () => LoggerServiceFactory.create({ loggerLevel }));
+
+    container.bind<UuidService>(symbols.uuidService, () => new UuidServiceImpl());
 
     container.bind<PostgresDatabaseClient>(symbols.postgresDatabaseClient, () =>
       PostgresDatabaseClientFactory.create({
