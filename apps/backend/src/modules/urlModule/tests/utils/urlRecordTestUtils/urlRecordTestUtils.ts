@@ -7,8 +7,8 @@ interface PersistPayload {
   urlRecord: UrlRecordRawEntity;
 }
 
-interface FindByEmailPayload {
-  email: string;
+interface FindByShortUrlPayload {
+  shortUrl: string;
 }
 
 interface FindByIdPayload {
@@ -32,12 +32,12 @@ export class UrlRecordTestUtils {
     await queryBuilder.insert(urlRecord);
   }
 
-  public async findByEmail(payload: FindByEmailPayload): Promise<UrlRecordRawEntity | undefined> {
-    const { email } = payload;
+  public async findByShortUrl(payload: FindByShortUrlPayload): Promise<UrlRecordRawEntity | undefined> {
+    const { shortUrl } = payload;
 
     const queryBuilder = this.createQueryBuilder();
 
-    const urlRecordRawEntity = await queryBuilder.select('*').where({ email }).first();
+    const urlRecordRawEntity = await queryBuilder.select('*').where({ shortUrl }).first();
 
     return urlRecordRawEntity;
   }

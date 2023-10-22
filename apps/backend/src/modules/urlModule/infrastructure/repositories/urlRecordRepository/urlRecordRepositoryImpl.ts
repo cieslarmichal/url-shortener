@@ -5,9 +5,10 @@ import { type QueryBuilder } from '../../../../../libs/database/types/queryBuild
 import { type UuidService } from '../../../../../libs/uuid/services/uuidService/uuidService.js';
 import { type UrlRecord } from '../../../domain/entities/urlRecord/urlRecord.js';
 import {
-  type FindUrlRecordPayload,
-  type CreateUrlRecordPayload,
+  type FindPayload,
+  type CreatePayload,
   type UrlRecordRepository,
+  type FindByIdPayload,
 } from '../../../domain/repositories/urlRecordRepository/urlRecordRepository.js';
 import { type UrlRecordRawEntity } from '../../databases/urlDatabase/tables/urlRecordTable/urlRecordRawEntity.js';
 import { UrlRecordTable } from '../../databases/urlDatabase/tables/urlRecordTable/urlRecordTable.js';
@@ -25,7 +26,7 @@ export class UrlRecordRepositoryImpl implements UrlRecordRepository {
     return this.postgresDatabaseClient<UrlRecordRawEntity>(this.databaseTable.name);
   }
 
-  public async createUrlRecord(payload: CreateUrlRecordPayload): Promise<UrlRecord> {
+  public async create(payload: CreatePayload): Promise<UrlRecord> {
     const { shortUrl, longUrl } = payload;
 
     const queryBuilder = this.createQueryBuilder();
@@ -58,7 +59,7 @@ export class UrlRecordRepositoryImpl implements UrlRecordRepository {
     return this.urlRecordMapper.mapToDomain(rawEntity);
   }
 
-  public async findUrlRecord(payload: FindUrlRecordPayload): Promise<UrlRecord | null> {
+  public async find(payload: FindPayload): Promise<UrlRecord | null> {
     const { shortUrl, longUrl } = payload;
 
     const queryBuilder = this.createQueryBuilder();
@@ -83,6 +84,29 @@ export class UrlRecordRepositoryImpl implements UrlRecordRepository {
 
     try {
       rawEntity = await queryBuilder.select('*').where(whereCondition).first();
+    } catch (error) {
+      throw new RepositoryError({
+        entity: 'UrlRecord',
+        operation: 'find',
+      });
+    }
+
+    if (!rawEntity) {
+      return null;
+    }
+
+    return this.urlRecordMapper.mapToDomain(rawEntity);
+  }
+
+  public async findById(payload: FindByIdPayload): Promise<UrlRecord | null> {
+    const { id } = payload;
+
+    const queryBuilder = this.createQueryBuilder();
+
+    let rawEntity: UrlRecordRawEntity | undefined;
+
+    try {
+      rawEntity = await queryBuilder.select('*').where({ id }).first();
     } catch (error) {
       throw new RepositoryError({
         entity: 'UrlRecord',

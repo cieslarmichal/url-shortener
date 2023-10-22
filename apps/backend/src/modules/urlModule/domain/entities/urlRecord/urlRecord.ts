@@ -6,10 +6,10 @@ export interface UrlRecordDraft {
 }
 
 export class UrlRecord {
-  public readonly id: string;
-  public readonly createdAt: Date;
-  public readonly shortUrl: string;
-  public readonly longUrl: string;
+  private readonly id: string;
+  private readonly createdAt: Date;
+  private readonly shortUrl: string;
+  private readonly longUrl: string;
 
   public constructor(draft: UrlRecordDraft) {
     const { id, createdAt, shortUrl, longUrl } = draft;
@@ -21,5 +21,21 @@ export class UrlRecord {
     this.shortUrl = shortUrl;
 
     this.longUrl = longUrl;
+  }
+
+  public getId(): string {
+    return this.id;
+  }
+
+  public getCreatedAt(): Date {
+    return this.createdAt;
+  }
+
+  public getShortUrl(): string {
+    return this.shortUrl;
+  }
+
+  public getLongUrl(): string {
+    return this.longUrl;
   }
 }
