@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  database:
+    container_name: url_shortener_postgres
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: local
+      POSTGRES_USER: local
+      POSTGRES_DB: url_shortener
+    ports:
+      - '5432:5432'
+    volumes:
+      - url-shortener-pgdata:/var/lib/postgresql/data
+
+volumes:
+  url-shortener-pgdata:
