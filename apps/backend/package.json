@@ -26,12 +26,14 @@
     "pg": "^8.11.3",
     "pino": "^8.15.1",
     "pino-pretty": "^10.2.0",
+    "uuid": "^9.0.1",
     "validator": "^13.11.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.1.0",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "^20.8.0",
+    "@types/uuid": "^9.0.4",
     "@types/validator": "^13.11.2"
   }
 }
