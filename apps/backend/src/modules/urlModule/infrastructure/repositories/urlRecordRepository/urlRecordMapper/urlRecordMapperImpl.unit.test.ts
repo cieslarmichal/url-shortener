@@ -12,15 +12,16 @@ describe('UrlRecordMapperImpl', () => {
     urlRecordMapperImpl = new UrlRecordMapperImpl();
   });
 
-  it('maps from urlRecord raw entity to domain urlRecord', async () => {
+  it('maps from UrlRecordRawEntity to UrlRecord', async () => {
     const urlRecordEntity = urlRecordEntityTestFactory.create();
 
     const urlRecord = urlRecordMapperImpl.mapToDomain(urlRecordEntity);
 
-    expect(urlRecord).toEqual({
+    expect(urlRecord).toMatchObject({
       id: urlRecordEntity.id,
-      email: urlRecordEntity.email,
-      password: urlRecordEntity.password,
+      createdAt: urlRecordEntity.createdAt,
+      shortUrl: urlRecordEntity.shortUrl,
+      longUrl: urlRecordEntity.longUrl,
     });
   });
 });

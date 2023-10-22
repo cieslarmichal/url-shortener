@@ -1,3 +1,3 @@
 export interface UrlModuleConfig {
-  readonly hashSaltRounds: number;
+  readonly hashSecret: string;
 }

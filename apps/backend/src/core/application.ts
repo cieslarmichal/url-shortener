@@ -28,7 +28,7 @@ export class Application {
 
     const modules: DependencyInjectionModule[] = [
       new UrlModule({
-        hashSaltRounds,
+        hashSecret: hashSaltRounds,
       }),
     ];
 
