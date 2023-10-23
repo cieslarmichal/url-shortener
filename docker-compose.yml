@@ -2,16 +2,17 @@ version: '3.9'
 
 services:
   database:
-    container_name: url_shortener_postgres
-    image: postgres:15
+    container_name: url_shortener_mongo
+    restart: always
+    image: mongo
     environment:
-      POSTGRES_PASSWORD: local
-      POSTGRES_USER: local
-      POSTGRES_DB: url_shortener
+      MONGO_INITDB_ROOT_USERNAME: local
+      MONGO_INITDB_ROOT_PASSWORD: local
+      MONGO_INITDB_DATABASE: url_shortener
     ports:
-      - '5432:5432'
+      - '27017:27017'
     volumes:
-      - url-shortener-pgdata:/var/lib/postgresql/data
+      - url-shortener-mongo-data:/data/db
 
 volumes:
-  url-shortener-pgdata:
+  url-shortener-mongo-data:
