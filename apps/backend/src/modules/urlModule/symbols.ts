@@ -4,8 +4,7 @@ export const symbols = {
   urlRecordRepository: Symbol('urlRecordRepository'),
   hashService: Symbol('hashService'),
   createUrlRecordCommandHandler: Symbol('createUrlRecordCommandHandler'),
-  findLongUrlQueryHandler: Symbol('findLongUrlQueryHandler'),
-  findShortUrlQueryHandler: Symbol('findShortUrlQueryHandler'),
+  findUrlRecordQueryHandler: Symbol('findUrlRecordQueryHandler'),
   urlHttpController: Symbol('urlHttpController'),
 };
 

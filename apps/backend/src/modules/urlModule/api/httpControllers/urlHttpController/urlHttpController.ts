@@ -38,20 +38,20 @@ import {
 import { HttpRoute } from '../../../../../common/types/http/httpRoute.js';
 import { HttpStatusCode } from '../../../../../common/types/http/httpStatusCode.js';
 import { responseErrorBodySchema, type ResponseErrorBody } from '../../../../../common/types/http/responseErrorBody.js';
+import { type CreateUrlRecordCommandHandler } from '../../../application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandler.js';
 import { type DeleteUrlRecordCommandHandler } from '../../../application/commandHandlers/deleteUrlRecordCommandHandler/deleteUrlRecordCommandHandler.js';
 import { type LoginUrlRecordCommandHandler } from '../../../application/commandHandlers/loginUrlRecordCommandHandler/loginUrlRecordCommandHandler.js';
-import { type RegisterUrlRecordCommandHandler } from '../../../application/commandHandlers/registerUrlRecordCommandHandler/registerUrlRecordCommandHandler.js';
-import { type FindUrlRecordQueryHandler } from '../../../application/queryHandlers/findUrlRecordQueryHandler/findUrlRecordQueryHandler.js';
+import { type FindLongUrlQueryHandler } from '../../../application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandler.js';
 import { type UrlRecord } from '../../../domain/entities/urlRecord/urlRecord.js';
 
 export class UrlHttpController implements HttpController {
   public readonly basePath = '';
 
   public constructor(
-    private readonly registerUrlRecordCommandHandler: RegisterUrlRecordCommandHandler,
+    private readonly registerUrlRecordCommandHandler: CreateUrlRecordCommandHandler,
     private readonly loginUrlRecordCommandHandler: LoginUrlRecordCommandHandler,
     private readonly deleteUrlRecordCommandHandler: DeleteUrlRecordCommandHandler,
-    private readonly findUrlRecordQueryHandler: FindUrlRecordQueryHandler,
+    private readonly findUrlRecordQueryHandler: FindLongUrlQueryHandler,
   ) {}
 
   public getHttpRoutes(): HttpRoute[] {

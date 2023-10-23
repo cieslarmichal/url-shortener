@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
-import { type RegisterUrlRecordCommandHandler } from './registerUrlRecordCommandHandler.js';
-import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/resourceAlreadyExistsError.js';
+import { type FindLongUrlQueryHandler } from './findLongUrlQueryHandler.js';
+import { ResourceNotFoundError } from '../../../../../common/errors/common/resourceNotFoundError.js';
 import { Application } from '../../../../../core/application.js';
 import { type PostgresDatabaseClient } from '../../../../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
 import { coreSymbols } from '../../../../../core/symbols.js';
@@ -9,8 +9,8 @@ import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 
-describe('RegisterUrlRecordCommandHandler', () => {
-  let registerUrlRecordCommandHandler: RegisterUrlRecordCommandHandler;
+describe('FindLongUrlQueryHandler', () => {
+  let findLongUrlQueryHandler: FindLongUrlQueryHandler;
 
   let postgresDatabaseClient: PostgresDatabaseClient;
 
@@ -21,7 +21,7 @@ describe('RegisterUrlRecordCommandHandler', () => {
   beforeEach(async () => {
     const container = Application.createContainer();
 
-    registerUrlRecordCommandHandler = container.get<RegisterUrlRecordCommandHandler>(symbols.registerUrlRecordCommandHandler);
+    findLongUrlQueryHandler = container.get<FindLongUrlQueryHandler>(symbols.findUrlRecordQueryHandler);
 
     postgresDatabaseClient = container.get<PostgresDatabaseClient>(coreSymbols.postgresDatabaseClient);
 
@@ -36,33 +36,23 @@ describe('RegisterUrlRecordCommandHandler', () => {
     await postgresDatabaseClient.destroy();
   });
 
-  it('creates a urlRecord', async () => {
-    const { email, password } = urlRecordEntityTestFactory.create();
+  it('finds UrlRecord by long url', async () => {
+    const urlRecord = urlRecordEntityTestFactory.create();
 
-    const { urlRecord } = await registerUrlRecordCommandHandler.execute({
-      email: email as string,
-      password,
-    });
+    await urlRecordTestUtils.persist({ urlRecord });
 
-    const foundUrlRecord = await urlRecordTestUtils.findByEmail({ email });
+    const { longUrl } = await findLongUrlQueryHandler.execute({ shortUrl: urlRecord.shortUrl });
 
-    expect(urlRecord.email).toEqual(email);
-
-    expect(foundUrlRecord).toBeDefined();
+    expect(longUrl).toEqual(urlRecord.longUrl);
   });
 
-  it('throws an error when urlRecord with the same email already exists', async () => {
-    const existingUrlRecord = urlRecordEntityTestFactory.create();
-
-    await urlRecordTestUtils.persist({ urlRecord: existingUrlRecord });
+  it('throws an error if UrlRecord with given long url does not exist', async () => {
+    const { shortUrl } = urlRecordEntityTestFactory.create();
 
     try {
-      await registerUrlRecordCommandHandler.execute({
-        email: existingUrlRecord.email,
-        password: existingUrlRecord.password,
-      });
+      await findLongUrlQueryHandler.execute({ shortUrl });
     } catch (error) {
-      expect(error).toBeInstanceOf(ResourceAlreadyExistsError);
+      expect(error).toBeInstanceOf(ResourceNotFoundError);
 
       return;
     }

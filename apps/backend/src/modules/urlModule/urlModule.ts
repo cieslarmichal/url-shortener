@@ -1,12 +1,12 @@
 import { UrlHttpController } from './api/httpControllers/urlHttpController/urlHttpController.js';
+import { type CreateUrlRecordCommandHandler } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandler.js';
+import { RegisterUrlRecordCommandHandlerImpl } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandlerImpl.js';
 import { type DeleteUrlRecordCommandHandler } from './application/commandHandlers/deleteUrlRecordCommandHandler/deleteUrlRecordCommandHandler.js';
 import { DeleteUrlRecordCommandHandlerImpl } from './application/commandHandlers/deleteUrlRecordCommandHandler/deleteUrlRecordCommandHandlerImpl.js';
 import { type LoginUrlRecordCommandHandler } from './application/commandHandlers/loginUrlRecordCommandHandler/loginUrlRecordCommandHandler.js';
 import { LoginUrlRecordCommandHandlerImpl } from './application/commandHandlers/loginUrlRecordCommandHandler/loginUrlRecordCommandHandlerImpl.js';
-import { type RegisterUrlRecordCommandHandler } from './application/commandHandlers/registerUrlRecordCommandHandler/registerUrlRecordCommandHandler.js';
-import { RegisterUrlRecordCommandHandlerImpl } from './application/commandHandlers/registerUrlRecordCommandHandler/registerUrlRecordCommandHandlerImpl.js';
-import { type FindUrlRecordQueryHandler } from './application/queryHandlers/findUrlRecordQueryHandler/findUrlRecordQueryHandler.js';
-import { FindUrlRecordQueryHandlerImpl } from './application/queryHandlers/findUrlRecordQueryHandler/findUrlRecordQueryHandlerImpl.js';
+import { type FindLongUrlQueryHandler } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandler.js';
+import { FindUrlRecordQueryHandlerImpl } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandlerImpl.js';
 import { type HashService } from './application/services/hashService/hashService.js';
 import { HashServiceImpl } from './application/services/hashService/hashServiceImpl.js';
 import { type UrlRecordRepository } from './domain/repositories/urlRecordRepository/urlRecordRepository.js';
@@ -45,7 +45,7 @@ export class UrlModule implements DependencyInjectionModule {
       () => new HashServiceImpl(container.get<UrlModuleConfig>(symbols.urlModuleConfig)),
     );
 
-    container.bind<RegisterUrlRecordCommandHandler>(
+    container.bind<CreateUrlRecordCommandHandler>(
       symbols.registerUrlRecordCommandHandler,
       () =>
         new RegisterUrlRecordCommandHandlerImpl(
@@ -56,7 +56,7 @@ export class UrlModule implements DependencyInjectionModule {
         ),
     );
 
-    container.bind<FindUrlRecordQueryHandler>(
+    container.bind<FindLongUrlQueryHandler>(
       symbols.findUrlRecordQueryHandler,
       () => new FindUrlRecordQueryHandlerImpl(container.get<UrlRecordRepository>(symbols.urlRecordRepository)),
     );
@@ -65,10 +65,10 @@ export class UrlModule implements DependencyInjectionModule {
       symbols.urlRecordHttpController,
       () =>
         new UrlHttpController(
-          container.get<RegisterUrlRecordCommandHandler>(symbols.registerUrlRecordCommandHandler),
+          container.get<CreateUrlRecordCommandHandler>(symbols.registerUrlRecordCommandHandler),
           container.get<LoginUrlRecordCommandHandler>(symbols.loginUrlRecordCommandHandler),
           container.get<DeleteUrlRecordCommandHandler>(symbols.deleteUrlRecordCommandHandler),
-          container.get<FindUrlRecordQueryHandler>(symbols.findUrlRecordQueryHandler),
+          container.get<FindLongUrlQueryHandler>(symbols.findUrlRecordQueryHandler),
         ),
     );
   }
