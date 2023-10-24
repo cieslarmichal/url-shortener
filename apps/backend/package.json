@@ -16,6 +16,7 @@
     "@fastify/type-provider-typebox": "^3.5.0",
     "@sinclair/typebox": "^0.31.18",
     "@typegoose/typegoose": "^11.6.0",
+    "base62": "^2.0.1",
     "dotenv": "^16.3.1",
     "fastify": "^4.24.3",
     "http-status-codes": "^2.3.0",

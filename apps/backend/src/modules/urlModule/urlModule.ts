@@ -34,10 +34,7 @@ export class UrlModule implements DependencyInjectionModule {
         ),
     );
 
-    container.bind<HashService>(
-      symbols.hashService,
-      () => new HashServiceImpl(container.get<UrlModuleConfig>(symbols.urlModuleConfig)),
-    );
+    container.bind<HashService>(symbols.hashService, () => new HashServiceImpl());
 
     container.bind<CreateUrlRecordCommandHandler>(
       symbols.createUrlRecordCommandHandler,
