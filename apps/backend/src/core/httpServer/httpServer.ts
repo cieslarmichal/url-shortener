@@ -15,8 +15,8 @@ import { type HttpController } from '../../common/types/http/httpController.js';
 import { HttpStatusCode } from '../../common/types/http/httpStatusCode.js';
 import { type DependencyInjectionContainer } from '../../libs/dependencyInjection/dependencyInjectionContainer.js';
 import { type LoggerService } from '../../libs/logger/services/loggerService/loggerService.js';
-import { type UserHttpController } from '../../modules/userModule/api/httpControllers/userHttpController/userHttpController.js';
-import { userSymbols } from '../../modules/userModule/symbols.js';
+import { type UrlHttpController } from '../../modules/urlModule/api/httpControllers/urlHttpController/urlHttpController.js';
+import { urlSymbols } from '../../modules/urlModule/symbols.js';
 import { HttpRouter } from '../httpRouter/httpRouter.js';
 import { coreSymbols } from '../symbols.js';
 
@@ -42,7 +42,7 @@ export class HttpServer {
   }
 
   private getControllers(): HttpController[] {
-    return [this.container.get<UserHttpController>(userSymbols.userHttpController)];
+    return [this.container.get<UrlHttpController>(urlSymbols.urlHttpController)];
   }
 
   public async start(payload: StartPayload): Promise<void> {

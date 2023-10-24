@@ -1,12 +1,8 @@
 import { UrlHttpController } from './api/httpControllers/urlHttpController/urlHttpController.js';
 import { type CreateUrlRecordCommandHandler } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandler.js';
-import { RegisterUrlRecordCommandHandlerImpl } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandlerImpl.js';
-import { type DeleteUrlRecordCommandHandler } from './application/commandHandlers/deleteUrlRecordCommandHandler/deleteUrlRecordCommandHandler.js';
-import { DeleteUrlRecordCommandHandlerImpl } from './application/commandHandlers/deleteUrlRecordCommandHandler/deleteUrlRecordCommandHandlerImpl.js';
-import { type LoginUrlRecordCommandHandler } from './application/commandHandlers/loginUrlRecordCommandHandler/loginUrlRecordCommandHandler.js';
-import { LoginUrlRecordCommandHandlerImpl } from './application/commandHandlers/loginUrlRecordCommandHandler/loginUrlRecordCommandHandlerImpl.js';
+import { CreateUrlRecordCommandHandlerImpl } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandlerImpl.js';
 import { type FindLongUrlQueryHandler } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandler.js';
-import { FindUrlRecordQueryHandlerImpl } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandlerImpl.js';
+import { FindLongUrlQueryHandlerImpl } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandlerImpl.js';
 import { type HashService } from './application/services/hashService/hashService.js';
 import { HashServiceImpl } from './application/services/hashService/hashServiceImpl.js';
 import { type UrlRecordRepository } from './domain/repositories/urlRecordRepository/urlRecordRepository.js';
@@ -15,7 +11,6 @@ import { UrlRecordMapperImpl } from './infrastructure/repositories/urlRecordRepo
 import { UrlRecordRepositoryImpl } from './infrastructure/repositories/urlRecordRepository/urlRecordRepositoryImpl.js';
 import { symbols } from './symbols.js';
 import { type UrlModuleConfig } from './urlModuleConfig.js';
-import { type PostgresDatabaseClient } from '../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
 import { coreSymbols } from '../../core/symbols.js';
 import { type DependencyInjectionContainer } from '../../libs/dependencyInjection/dependencyInjectionContainer.js';
 import { type DependencyInjectionModule } from '../../libs/dependencyInjection/dependencyInjectionModule.js';
@@ -34,7 +29,6 @@ export class UrlModule implements DependencyInjectionModule {
       symbols.urlRecordRepository,
       () =>
         new UrlRecordRepositoryImpl(
-          container.get<PostgresDatabaseClient>(coreSymbols.postgresDatabaseClient),
           container.get<UrlRecordMapper>(symbols.urlRecordMapper),
           container.get<UuidService>(coreSymbols.uuidService),
         ),
@@ -46,29 +40,28 @@ export class UrlModule implements DependencyInjectionModule {
     );
 
     container.bind<CreateUrlRecordCommandHandler>(
-      symbols.registerUrlRecordCommandHandler,
+      symbols.createUrlRecordCommandHandler,
       () =>
-        new RegisterUrlRecordCommandHandlerImpl(
+        new CreateUrlRecordCommandHandlerImpl(
           container.get<UrlRecordRepository>(symbols.urlRecordRepository),
           container.get<HashService>(symbols.hashService),
-          container.get<UuidService>(coreSymbols.uuidService),
           container.get<LoggerService>(coreSymbols.loggerService),
+          container.get<UrlModuleConfig>(symbols.urlModuleConfig),
         ),
     );
 
     container.bind<FindLongUrlQueryHandler>(
-      symbols.findUrlRecordQueryHandler,
-      () => new FindUrlRecordQueryHandlerImpl(container.get<UrlRecordRepository>(symbols.urlRecordRepository)),
+      symbols.findLongUrlQueryHandler,
+      () => new FindLongUrlQueryHandlerImpl(container.get<UrlRecordRepository>(symbols.urlRecordRepository)),
     );
 
     container.bind<UrlHttpController>(
-      symbols.urlRecordHttpController,
+      symbols.urlHttpController,
       () =>
         new UrlHttpController(
-          container.get<CreateUrlRecordCommandHandler>(symbols.registerUrlRecordCommandHandler),
-          container.get<LoginUrlRecordCommandHandler>(symbols.loginUrlRecordCommandHandler),
-          container.get<DeleteUrlRecordCommandHandler>(symbols.deleteUrlRecordCommandHandler),
-          container.get<FindLongUrlQueryHandler>(symbols.findUrlRecordQueryHandler),
+          container.get<CreateUrlRecordCommandHandler>(symbols.createUrlRecordCommandHandler),
+          container.get<FindLongUrlQueryHandler>(symbols.findLongUrlQueryHandler),
+          container.get<UrlModuleConfig>(symbols.urlModuleConfig),
         ),
     );
   }
