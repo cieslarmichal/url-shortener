@@ -12,14 +12,6 @@ export class ConfigProvider {
     return value;
   }
 
-  private static getIntegerEnvVariable(envVariableName: string): number {
-    const value = EnvParser.parseNumber({ name: envVariableName });
-
-    Assert.isNumberInteger(value);
-
-    return value;
-  }
-
   private static getEnumEnvVariable<T extends Record<string, string>>(
     enumType: T,
     envVariableName: string,
@@ -51,20 +43,20 @@ export class ConfigProvider {
     return serverPort;
   }
 
-  public static getPostgresDatabaseHost(): string {
-    return this.getStringEnvVariable('POSTGRES_DATABASE_HOST');
+  public static getMongoDatabaseHost(): string {
+    return this.getStringEnvVariable('MONGO_DATABASE_HOST');
   }
 
-  public static getPostgresDatabaseName(): string {
-    return this.getStringEnvVariable('POSTGRES_DATABASE_NAME');
+  public static getMongoDatabaseName(): string {
+    return this.getStringEnvVariable('MONGO_DATABASE_NAME');
   }
 
-  public static getPostgresDatabaseUser(): string {
-    return this.getStringEnvVariable('POSTGRES_DATABASE_USER');
+  public static getMongoDatabaseUser(): string {
+    return this.getStringEnvVariable('MONGO_DATABASE_USER');
   }
 
-  public static getPostgresDatabasePassword(): string {
-    return this.getStringEnvVariable('POSTGRES_DATABASE_PASSWORD');
+  public static getMongoDatabasePassword(): string {
+    return this.getStringEnvVariable('MONGO_DATABASE_PASSWORD');
   }
 
   public static getHashSecret(): string {

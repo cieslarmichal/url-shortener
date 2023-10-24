@@ -14,13 +14,13 @@ import { UrlModule } from '../modules/urlModule/urlModule.js';
 
 export class Application {
   public static createContainer(): DependencyInjectionContainer {
-    const databaseHost = ConfigProvider.getPostgresDatabaseHost();
+    const databaseHost = ConfigProvider.getMongoDatabaseHost();
 
-    const databaseName = ConfigProvider.getPostgresDatabaseName();
+    const databaseName = ConfigProvider.getMongoDatabaseName();
 
-    const databaseUser = ConfigProvider.getPostgresDatabaseUser();
+    const databaseUser = ConfigProvider.getMongoDatabaseUser();
 
-    const databasePassword = ConfigProvider.getPostgresDatabasePassword();
+    const databasePassword = ConfigProvider.getMongoDatabasePassword();
 
     const hashSecret = ConfigProvider.getHashSecret();
 
@@ -40,15 +40,6 @@ export class Application {
     container.bind<LoggerService>(symbols.loggerService, () => LoggerServiceFactory.create({ loggerLevel }));
 
     container.bind<UuidService>(symbols.uuidService, () => new UuidServiceImpl());
-
-    container.bind<PostgresDatabaseClient>(symbols.postgresDatabaseClient, () =>
-      PostgresDatabaseClientFactory.create({
-        databaseHost,
-        databaseName,
-        databaseUser,
-        databasePassword,
-      }),
-    );
 
     return container;
   }
