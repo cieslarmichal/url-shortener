@@ -47,6 +47,10 @@ export class ConfigProvider {
     return this.getStringEnvVariable('MONGO_DATABASE_HOST');
   }
 
+  public static getMongoDatabasePort(): number {
+    return 27017;
+  }
+
   public static getMongoDatabaseName(): string {
     return this.getStringEnvVariable('MONGO_DATABASE_NAME');
   }

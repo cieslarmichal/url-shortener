@@ -1,6 +1,6 @@
+import mongoose from 'mongoose';
+
 import { ConfigProvider } from './configProvider.js';
-import { type PostgresDatabaseClient } from './database/postgresDatabaseClient/postgresDatabaseClient.js';
-import { PostgresDatabaseClientFactory } from './database/postgresDatabaseClient/postgresDatabaseClientFactory.js';
 import { HttpServer } from './httpServer/httpServer.js';
 import { coreSymbols, symbols } from './symbols.js';
 import { type DependencyInjectionContainer } from '../libs/dependencyInjection/dependencyInjectionContainer.js';
@@ -14,14 +14,6 @@ import { UrlModule } from '../modules/urlModule/urlModule.js';
 
 export class Application {
   public static createContainer(): DependencyInjectionContainer {
-    const databaseHost = ConfigProvider.getMongoDatabaseHost();
-
-    const databaseName = ConfigProvider.getMongoDatabaseName();
-
-    const databaseUser = ConfigProvider.getMongoDatabaseUser();
-
-    const databasePassword = ConfigProvider.getMongoDatabasePassword();
-
     const hashSecret = ConfigProvider.getHashSecret();
 
     const domainUrl = ConfigProvider.getDomainUrl();
@@ -46,6 +38,20 @@ export class Application {
 
   public static async start(): Promise<void> {
     const container = Application.createContainer();
+
+    const databaseHost = ConfigProvider.getMongoDatabaseHost();
+
+    const databasePort = ConfigProvider.getMongoDatabasePort();
+
+    const databaseName = ConfigProvider.getMongoDatabaseName();
+
+    const databaseUser = ConfigProvider.getMongoDatabaseUser();
+
+    const databasePassword = ConfigProvider.getMongoDatabasePassword();
+
+    await mongoose.connect(
+      `mongodb://${databaseUser}:${databasePassword}@${databaseHost}:${databasePort}/${databaseName}`,
+    );
 
     const serverHost = ConfigProvider.getServerHost();
 
