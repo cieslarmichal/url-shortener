@@ -1,14 +1,13 @@
 import {
-  CreateUrlRecordCommandHandler,
+  type CreateUrlRecordCommandHandler,
   type ExecutePayload,
   type ExecuteResult,
 } from './createUrlRecordCommandHandler.js';
-import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/resourceAlreadyExistsError.js';
 import { type LoggerService } from '../../../../../libs/logger/services/loggerService/loggerService.js';
-import { type UuidService } from '../../../../../libs/uuid/services/uuidService/uuidService.js';
 import { type UrlRecordRepository } from '../../../domain/repositories/urlRecordRepository/urlRecordRepository.js';
+import { type UrlModuleConfig } from '../../../urlModuleConfig.js';
+import { type EncoderService } from '../../services/encoderService/encoderService.js';
 import { type HashService } from '../../services/hashService/hashService.js';
-import { UrlModuleConfig } from '../../../urlModuleConfig.js';
 
 export class CreateUrlRecordCommandHandlerImpl implements CreateUrlRecordCommandHandler {
   public constructor(
@@ -16,40 +15,61 @@ export class CreateUrlRecordCommandHandlerImpl implements CreateUrlRecordCommand
     private readonly hashService: HashService,
     private readonly loggerService: LoggerService,
     private readonly config: UrlModuleConfig,
+    private readonly encoderService: EncoderService,
   ) {}
 
   public async execute(payload: ExecutePayload): Promise<ExecuteResult> {
     const { longUrl } = payload;
 
-    this.loggerService.debug({ message: 'Creating UrlRecord...',context: { longUrl }});
+    this.loggerService.debug({
+      message: 'Creating UrlRecord...',
+      context: { longUrl },
+    });
 
     const existingUrlRecord = await this.urlRecordRepository.find({ longUrl });
 
     if (existingUrlRecord) {
-      throw new ResourceAlreadyExistsError({
-        name: 'UrlRecord',
-        longUrl,
-      });
+      return { urlRecord: existingUrlRecord };
     }
 
-    const hash = await this.hashService.hash(longUrl);
+    const shortUrl = await this.findAvailableShortUrl(longUrl);
 
     const urlRecord = await this.urlRecordRepository.create({
-      email,
-      password: hashedPassword,
+      longUrl,
+      shortUrl,
     });
 
     this.loggerService.info({
       message: 'UrlRecord created.',
       context: {
-        email,
-        urlRecordId: urlRecord.id,
-        longUrl: urlRecord,
+        longUrl: urlRecord.getLongUrl(),
+        shortUrl: urlRecord.getShortUrl(),
+        urlRecordId: urlRecord.getId(),
       },
     });
 
     return { urlRecord };
   }
 
-  private async findAvailableShortUrl
+  private async findAvailableShortUrl(longUrl: string): Promise<string> {
+    const shortUrlPathParam = await this.getShortUrlPathParam(longUrl);
+
+    const shortUrl = `${this.config.domainUrl}/${shortUrlPathParam}`;
+
+    const existingUrlRecord = await this.urlRecordRepository.find({ shortUrl });
+
+    if (existingUrlRecord) {
+      return this.findAvailableShortUrl(longUrl + '38a17ds4c');
+    }
+
+    return shortUrl;
+  }
+
+  private async getShortUrlPathParam(longUrl: string): Promise<string> {
+    const hash = await this.hashService.hash(longUrl);
+
+    const encodedHash = this.encoderService.encodeBase62(hash);
+
+    return encodedHash.slice(0, 7);
+  }
 }

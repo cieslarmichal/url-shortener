@@ -29,7 +29,7 @@ import { type UrlRecord } from '../../../domain/entities/urlRecord/urlRecord.js'
 import { type UrlModuleConfig } from '../../../urlModuleConfig.js';
 
 export class UrlHttpController implements HttpController {
-  public readonly basePath = '/api/urls';
+  public readonly basePath = '';
 
   public constructor(
     private readonly createUrlRecordCommandHandler: CreateUrlRecordCommandHandler,
@@ -40,6 +40,7 @@ export class UrlHttpController implements HttpController {
   public getHttpRoutes(): HttpRoute[] {
     return [
       new HttpRoute({
+        path: '/urls',
         method: HttpMethodName.post,
         handler: this.createUrlRecord.bind(this),
         schema: {

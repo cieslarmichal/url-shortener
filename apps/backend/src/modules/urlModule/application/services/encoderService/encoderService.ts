@@ -1,3 +1,3 @@
 export interface EncoderService {
-  encodeBase62(data: number): Promise<string>;
+  encodeBase62(hexString: string): string;
 }
