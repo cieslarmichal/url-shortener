@@ -1,10 +1,12 @@
-import { type PostgresDatabaseClient } from '../../../../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
-import { type QueryBuilder } from '../../../../../libs/database/types/queryBuilder.js';
-import { type UrlRecordRawEntity } from '../../../infrastructure/databases/urlDatabase/tables/urlRecordTable/urlRecordRawEntity.js';
-import { UrlRecordTable } from '../../../infrastructure/databases/urlDatabase/tables/urlRecordTable/urlRecordTable.js';
+import { type UrlRecord } from '../../../domain/entities/urlRecord/urlRecord.js';
+import {
+  urlRecordRawEntityModel,
+  type UrlRecordRawEntity,
+} from '../../../infrastructure/entities/urlRecordRawEntity.js';
+import { UrlRecordRawEntityTestFactory } from '../../factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
 
 interface PersistPayload {
-  urlRecord: UrlRecordRawEntity;
+  urlRecord: UrlRecord;
 }
 
 interface FindByShortUrlPayload {
@@ -16,45 +18,39 @@ interface FindByIdPayload {
 }
 
 export class UrlRecordTestUtils {
-  private readonly databaseTable = new UrlRecordTable();
+  private readonly urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
-  public constructor(private readonly postgresDatabaseClient: PostgresDatabaseClient) {}
+  public async createAndPersist(input: Partial<UrlRecordRawEntity> = {}): Promise<UrlRecordRawEntity> {
+    const urlRecord = this.urlRecordRawEntityTestFactory.create(input);
 
-  private createQueryBuilder(): QueryBuilder<UrlRecordRawEntity> {
-    return this.postgresDatabaseClient<UrlRecordRawEntity>(this.databaseTable.name);
+    const urlRecordRawEntity = await urlRecordRawEntityModel.create(urlRecord);
+
+    return urlRecordRawEntity;
   }
 
   public async persist(payload: PersistPayload): Promise<void> {
     const { urlRecord } = payload;
 
-    const queryBuilder = this.createQueryBuilder();
-
-    await queryBuilder.insert(urlRecord);
+    await urlRecordRawEntityModel.create(urlRecord);
   }
 
-  public async findByShortUrl(payload: FindByShortUrlPayload): Promise<UrlRecordRawEntity | undefined> {
+  public async findByShortUrl(payload: FindByShortUrlPayload): Promise<UrlRecordRawEntity | null> {
     const { shortUrl } = payload;
 
-    const queryBuilder = this.createQueryBuilder();
-
-    const urlRecordRawEntity = await queryBuilder.select('*').where({ shortUrl }).first();
+    const urlRecordRawEntity = await urlRecordRawEntityModel.findOne({ shortUrl });
 
     return urlRecordRawEntity;
   }
 
-  public async findById(payload: FindByIdPayload): Promise<UrlRecordRawEntity | undefined> {
+  public async findById(payload: FindByIdPayload): Promise<UrlRecordRawEntity | null> {
     const { id } = payload;
 
-    const queryBuilder = this.createQueryBuilder();
-
-    const urlRecordRawEntity = await queryBuilder.select('*').where({ id }).first();
+    const urlRecordRawEntity = await urlRecordRawEntityModel.findById(id);
 
     return urlRecordRawEntity;
   }
 
   public async truncate(): Promise<void> {
-    const queryBuilder = this.createQueryBuilder();
-
-    await queryBuilder.truncate();
+    await urlRecordRawEntityModel.deleteMany();
   }
 }

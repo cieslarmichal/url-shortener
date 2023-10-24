@@ -22,13 +22,16 @@ export class Application {
 
     const databasePassword = ConfigProvider.getPostgresDatabasePassword();
 
-    const hashSaltRounds = ConfigProvider.getHashSaltRounds();
+    const hashSecret = ConfigProvider.getHashSecret();
+
+    const domainUrl = ConfigProvider.getDomainUrl();
 
     const loggerLevel = ConfigProvider.getLoggerLevel();
 
     const modules: DependencyInjectionModule[] = [
       new UrlModule({
-        hashSecret: hashSaltRounds,
+        hashSecret,
+        domainUrl,
       }),
     ];
 

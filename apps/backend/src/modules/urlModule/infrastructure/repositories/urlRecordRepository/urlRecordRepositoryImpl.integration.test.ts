@@ -1,32 +1,28 @@
+import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { RepositoryError } from '../../../../../common/errors/common/repositoryError.js';
+import { Generator } from '../../../../../common/tests/generator.js';
 import { Application } from '../../../../../core/application.js';
-import { type PostgresDatabaseClient } from '../../../../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
-import { coreSymbols } from '../../../../../core/symbols.js';
 import { type UrlRecordRepository } from '../../../domain/repositories/urlRecordRepository/urlRecordRepository.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
-import { type UrlRecordRawEntity } from '../../databases/urlDatabase/tables/urlRecordTable/urlRecordRawEntity.js';
+import { type UrlRecordRawEntity } from '../../entities/urlRecordRawEntity.js';
 
 describe('UrlRecordRepositoryImpl', () => {
   let urlRecordRepository: UrlRecordRepository;
 
-  let postgresDatabaseClient: PostgresDatabaseClient;
+  const urlRecordTestUtils = new UrlRecordTestUtils();
 
-  let urlRecordTestUtils: UrlRecordTestUtils;
-
-  const urlRecordEntityTestFactory = new UrlRecordRawEntityTestFactory();
+  const urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
   beforeEach(async () => {
     const container = Application.createContainer();
 
     urlRecordRepository = container.get<UrlRecordRepository>(symbols.urlRecordRepository);
 
-    postgresDatabaseClient = container.get<PostgresDatabaseClient>(coreSymbols.postgresDatabaseClient);
-
-    urlRecordTestUtils = new UrlRecordTestUtils(postgresDatabaseClient);
+    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
 
     await urlRecordTestUtils.truncate();
   });
@@ -34,42 +30,41 @@ describe('UrlRecordRepositoryImpl', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await postgresDatabaseClient.destroy();
+    await mongoose.disconnect();
   });
 
   describe('create', () => {
     it('creates an UrlRecord', async () => {
-      const { longUrl, shortUrl } = urlRecordEntityTestFactory.create();
+      const urlRecord = urlRecordRawEntityTestFactory.create();
 
-      const urlRecord = await urlRecordRepository.create({
-        longUrl,
-        shortUrl,
+      const createdUrlRecord = await urlRecordRepository.create({
+        longUrl: urlRecord.longUrl,
+        shortUrl: urlRecord.shortUrl,
       });
 
-      const foundUrlRecord = (await urlRecordTestUtils.findByShortUrl({ shortUrl })) as UrlRecordRawEntity;
+      const foundUrlRecord = (await urlRecordTestUtils.findById({
+        id: createdUrlRecord.getId(),
+      })) as UrlRecordRawEntity;
 
-      expect(foundUrlRecord).toBeDefined();
+      expect(foundUrlRecord).not.toBeNull();
 
       expect(foundUrlRecord).toMatchObject({
         id: expect.any(String),
         createdAt: expect.any(Date),
-        shortUrl,
-        longUrl,
+        longUrl: createdUrlRecord.getLongUrl(),
+        shortUrl: createdUrlRecord.getShortUrl(),
       });
 
-      expect(urlRecord.getId()).toEqual(foundUrlRecord.id);
-
-      expect(urlRecord.getCreatedAt()).toEqual(foundUrlRecord.createdAt);
-
-      expect(urlRecord.getShortUrl()).toEqual(foundUrlRecord.shortUrl);
-
-      expect(urlRecord.getLongUrl()).toEqual(foundUrlRecord.longUrl);
+      expect(foundUrlRecord).toMatchObject({
+        id: createdUrlRecord.getId(),
+        createdAt: createdUrlRecord.getCreatedAt(),
+        longUrl: createdUrlRecord.getLongUrl(),
+        shortUrl: createdUrlRecord.getShortUrl(),
+      });
     });
 
-    it('throws an error when UrlRecord with the same email already exists', async () => {
-      const existingUrlRecord = urlRecordEntityTestFactory.create();
-
-      await urlRecordTestUtils.persist({ urlRecord: existingUrlRecord });
+    it('throws an error when UrlRecord with the same urls already exists', async () => {
+      const existingUrlRecord = await urlRecordTestUtils.createAndPersist();
 
       try {
         await urlRecordRepository.create({
@@ -88,9 +83,7 @@ describe('UrlRecordRepositoryImpl', () => {
 
   describe('find', () => {
     it('finds UrlRecord by short url', async () => {
-      const urlRecord = urlRecordEntityTestFactory.create();
-
-      await urlRecordTestUtils.persist({ urlRecord });
+      const urlRecord = await urlRecordTestUtils.createAndPersist();
 
       const foundUrlRecord = await urlRecordRepository.find({ shortUrl: urlRecord.shortUrl });
 
@@ -98,7 +91,7 @@ describe('UrlRecordRepositoryImpl', () => {
     });
 
     it('returns null if UrlRecord with given short url does not exist', async () => {
-      const { shortUrl } = urlRecordEntityTestFactory.create();
+      const shortUrl = Generator.url();
 
       const foundUrlRecord = await urlRecordRepository.find({ shortUrl });
 
@@ -106,9 +99,7 @@ describe('UrlRecordRepositoryImpl', () => {
     });
 
     it('finds UrlRecord by long url', async () => {
-      const urlRecord = urlRecordEntityTestFactory.create();
-
-      await urlRecordTestUtils.persist({ urlRecord });
+      const urlRecord = await urlRecordTestUtils.createAndPersist();
 
       const foundUrlRecord = await urlRecordRepository.find({ longUrl: urlRecord.longUrl });
 
@@ -116,7 +107,7 @@ describe('UrlRecordRepositoryImpl', () => {
     });
 
     it('returns null if UrlRecord with given long url does not exist', async () => {
-      const { longUrl } = urlRecordEntityTestFactory.create();
+      const longUrl = Generator.url();
 
       const foundUrlRecord = await urlRecordRepository.find({ longUrl });
 
@@ -126,17 +117,15 @@ describe('UrlRecordRepositoryImpl', () => {
 
   describe('findById', () => {
     it('finds UrlRecord by id', async () => {
-      const urlRecord = urlRecordEntityTestFactory.create();
+      const urlRecord = await urlRecordTestUtils.createAndPersist();
 
-      await urlRecordTestUtils.persist({ urlRecord });
-
-      const foundUrlRecord = await urlRecordRepository.findById({ id: urlRecord.id });
+      const foundUrlRecord = await urlRecordRepository.findById({ id: urlRecord._id });
 
       expect(foundUrlRecord).not.toBeNull();
     });
 
     it('throws an error if UrlRecord with given id does not exist', async () => {
-      const { id } = urlRecordEntityTestFactory.create();
+      const id = Generator.uuid();
 
       const foundUrlRecord = await urlRecordRepository.findById({ id });
 

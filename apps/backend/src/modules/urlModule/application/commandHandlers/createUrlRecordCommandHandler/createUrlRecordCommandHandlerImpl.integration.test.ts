@@ -1,33 +1,28 @@
+import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { type CreateUrlRecordCommandHandler } from './createUrlRecordCommandHandler.js';
 import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/resourceAlreadyExistsError.js';
 import { Application } from '../../../../../core/application.js';
-import { type PostgresDatabaseClient } from '../../../../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
-import { coreSymbols } from '../../../../../core/symbols.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 
-describe('RegisterUrlRecordCommandHandler', () => {
-  let registerUrlRecordCommandHandler: CreateUrlRecordCommandHandler;
-
-  let postgresDatabaseClient: PostgresDatabaseClient;
+describe('CreateUrlRecordCommandHandler', () => {
+  let createUrlRecordCommandHandler: CreateUrlRecordCommandHandler;
 
   let urlRecordTestUtils: UrlRecordTestUtils;
 
-  const urlRecordEntityTestFactory = new UrlRecordRawEntityTestFactory();
+  const urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
   beforeEach(async () => {
     const container = Application.createContainer();
 
-    registerUrlRecordCommandHandler = container.get<CreateUrlRecordCommandHandler>(
-      symbols.createUrlRecordCommandHandler,
-    );
+    createUrlRecordCommandHandler = container.get<CreateUrlRecordCommandHandler>(symbols.createUrlRecordCommandHandler);
 
-    postgresDatabaseClient = container.get<PostgresDatabaseClient>(coreSymbols.postgresDatabaseClient);
+    urlRecordTestUtils = new UrlRecordTestUtils();
 
-    urlRecordTestUtils = new UrlRecordTestUtils(postgresDatabaseClient);
+    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
 
     await urlRecordTestUtils.truncate();
   });
@@ -35,33 +30,29 @@ describe('RegisterUrlRecordCommandHandler', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await postgresDatabaseClient.destroy();
+    await mongoose.disconnect();
   });
 
-  it('creates a urlRecord', async () => {
-    const { email, password } = urlRecordEntityTestFactory.create();
+  it('creates an UrlRecord', async () => {
+    const { longUrl } = urlRecordRawEntityTestFactory.create();
 
-    const { urlRecord } = await registerUrlRecordCommandHandler.execute({
-      email: email as string,
-      password,
+    const { urlRecord } = await createUrlRecordCommandHandler.execute({
+      longUrl,
     });
 
-    const foundUrlRecord = await urlRecordTestUtils.findByEmail({ email });
+    const foundUrlRecord = await urlRecordTestUtils.findById({ id: urlRecord.getId() });
 
-    expect(urlRecord.email).toEqual(email);
+    expect(foundUrlRecord).not.toBeNull();
 
-    expect(foundUrlRecord).toBeDefined();
+    expect(foundUrlRecord?.longUrl).toEqual(longUrl);
   });
 
-  it('throws an error when urlRecord with the same email already exists', async () => {
-    const existingUrlRecord = urlRecordEntityTestFactory.create();
-
-    await urlRecordTestUtils.persist({ urlRecord: existingUrlRecord });
+  it('throws an error - when UrlRecord with the same url already exists', async () => {
+    const urlRecord = await urlRecordTestUtils.createAndPersist();
 
     try {
-      await registerUrlRecordCommandHandler.execute({
-        email: existingUrlRecord.email,
-        password: existingUrlRecord.password,
+      await createUrlRecordCommandHandler.execute({
+        longUrl: urlRecord.longUrl,
       });
     } catch (error) {
       expect(error).toBeInstanceOf(ResourceAlreadyExistsError);

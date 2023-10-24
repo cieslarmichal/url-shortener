@@ -67,11 +67,11 @@ export class ConfigProvider {
     return this.getStringEnvVariable('POSTGRES_DATABASE_PASSWORD');
   }
 
-  public static getHashSecret(): number {
-    return this.getIntegerEnvVariable('HASH_SECRET');
+  public static getHashSecret(): string {
+    return this.getStringEnvVariable('HASH_SECRET');
   }
 
-  public static getDomainUrl(): number {
-    return this.getIntegerEnvVariable('DOMAIN_URL');
+  public static getDomainUrl(): string {
+    return this.getStringEnvVariable('DOMAIN_URL');
   }
 }

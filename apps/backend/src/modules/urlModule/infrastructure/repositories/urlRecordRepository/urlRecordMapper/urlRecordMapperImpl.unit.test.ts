@@ -18,7 +18,7 @@ describe('UrlRecordMapperImpl', () => {
     const urlRecord = urlRecordMapperImpl.mapToDomain(urlRecordEntity);
 
     expect(urlRecord).toMatchObject({
-      id: urlRecordEntity.id,
+      id: urlRecordEntity._id,
       createdAt: urlRecordEntity.createdAt,
       shortUrl: urlRecordEntity.shortUrl,
       longUrl: urlRecordEntity.longUrl,

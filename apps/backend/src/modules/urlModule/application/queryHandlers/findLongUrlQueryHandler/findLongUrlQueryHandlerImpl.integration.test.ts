@@ -1,10 +1,9 @@
+import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { type FindLongUrlQueryHandler } from './findLongUrlQueryHandler.js';
 import { ResourceNotFoundError } from '../../../../../common/errors/common/resourceNotFoundError.js';
 import { Application } from '../../../../../core/application.js';
-import { type PostgresDatabaseClient } from '../../../../../core/database/postgresDatabaseClient/postgresDatabaseClient.js';
-import { coreSymbols } from '../../../../../core/symbols.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
@@ -12,9 +11,7 @@ import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlR
 describe('FindLongUrlQueryHandler', () => {
   let findLongUrlQueryHandler: FindLongUrlQueryHandler;
 
-  let postgresDatabaseClient: PostgresDatabaseClient;
-
-  let urlRecordTestUtils: UrlRecordTestUtils;
+  const urlRecordTestUtils = new UrlRecordTestUtils();
 
   const urlRecordEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
@@ -23,9 +20,7 @@ describe('FindLongUrlQueryHandler', () => {
 
     findLongUrlQueryHandler = container.get<FindLongUrlQueryHandler>(symbols.findUrlRecordQueryHandler);
 
-    postgresDatabaseClient = container.get<PostgresDatabaseClient>(coreSymbols.postgresDatabaseClient);
-
-    urlRecordTestUtils = new UrlRecordTestUtils(postgresDatabaseClient);
+    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
 
     await urlRecordTestUtils.truncate();
   });
@@ -33,20 +28,18 @@ describe('FindLongUrlQueryHandler', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await postgresDatabaseClient.destroy();
+    await mongoose.disconnect();
   });
 
   it('finds UrlRecord by long url', async () => {
-    const urlRecord = urlRecordEntityTestFactory.create();
-
-    await urlRecordTestUtils.persist({ urlRecord });
+    const urlRecord = await urlRecordTestUtils.createAndPersist();
 
     const { longUrl } = await findLongUrlQueryHandler.execute({ shortUrl: urlRecord.shortUrl });
 
     expect(longUrl).toEqual(urlRecord.longUrl);
   });
 
-  it('throws an error if UrlRecord with given long url does not exist', async () => {
+  it('throws an error if UrlRecord with given short url does not exist', async () => {
     const { shortUrl } = urlRecordEntityTestFactory.create();
 
     try {
