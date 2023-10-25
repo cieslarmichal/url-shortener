@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { type CreateUrlRecordCommandHandlerImpl } from './createUrlRecordCommandHandlerImpl.js';
@@ -6,12 +5,15 @@ import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/
 import { Application } from '../../../../../core/application.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
+import { MongoDbTestUtils } from '../../../tests/utils/mongoDbTestUtils/mongoDbTestUtils.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 
 describe('CreateUrlRecordCommandHandler', () => {
   let createUrlRecordCommandHandler: CreateUrlRecordCommandHandlerImpl;
 
-  let urlRecordTestUtils: UrlRecordTestUtils;
+  const urlRecordTestUtils = new UrlRecordTestUtils();
+
+  const mongoDbTestUtils = new MongoDbTestUtils();
 
   const urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
@@ -22,9 +24,7 @@ describe('CreateUrlRecordCommandHandler', () => {
       symbols.createUrlRecordCommandHandler,
     );
 
-    urlRecordTestUtils = new UrlRecordTestUtils();
-
-    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
+    await mongoDbTestUtils.connect();
 
     await urlRecordTestUtils.truncate();
   });
@@ -32,7 +32,7 @@ describe('CreateUrlRecordCommandHandler', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await mongoose.disconnect();
+    await mongoDbTestUtils.disconnect();
   });
 
   it('creates an UrlRecord', async () => {

@@ -35,19 +35,9 @@ export class Application {
   public static async start(): Promise<void> {
     const container = Application.createContainer();
 
-    const databaseHost = ConfigProvider.getMongoDatabaseHost();
+    const databaseUri = ConfigProvider.getMongoDatabaseUri();
 
-    const databasePort = ConfigProvider.getMongoDatabasePort();
-
-    const databaseName = ConfigProvider.getMongoDatabaseName();
-
-    const databaseUser = ConfigProvider.getMongoDatabaseUser();
-
-    const databasePassword = ConfigProvider.getMongoDatabasePassword();
-
-    await mongoose.connect(
-      `mongodb://${databaseUser}:${databasePassword}@${databaseHost}:${databasePort}/${databaseName}`,
-    );
+    await mongoose.connect(databaseUri);
 
     const serverHost = ConfigProvider.getServerHost();
 

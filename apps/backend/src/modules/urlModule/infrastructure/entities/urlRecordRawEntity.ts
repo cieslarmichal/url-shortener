@@ -25,4 +25,9 @@ const urlRecordRawEntitySchema = new Schema<UrlRecordRawEntity>({
   },
 });
 
-export const urlRecordRawEntityModel = model<UrlRecordRawEntity>('UrlRecordRawEntity', urlRecordRawEntitySchema);
+export const urlRecordRawEntityModel = model<UrlRecordRawEntity>(
+  'UrlRecordRawEntity',
+  urlRecordRawEntitySchema,
+  'urlRecords',
+  { overwriteModels: true },
+);

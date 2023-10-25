@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { RepositoryError } from '../../../../../common/errors/common/repositoryError.js';
@@ -7,6 +6,7 @@ import { Application } from '../../../../../core/application.js';
 import { type UrlRecordRepository } from '../../../domain/repositories/urlRecordRepository/urlRecordRepository.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
+import { MongoDbTestUtils } from '../../../tests/utils/mongoDbTestUtils/mongoDbTestUtils.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 import { type UrlRecordRawEntity } from '../../entities/urlRecordRawEntity.js';
 
@@ -15,6 +15,8 @@ describe('UrlRecordRepositoryImpl', () => {
 
   const urlRecordTestUtils = new UrlRecordTestUtils();
 
+  const mongoDbTestUtils = new MongoDbTestUtils();
+
   const urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
   beforeEach(async () => {
@@ -22,7 +24,7 @@ describe('UrlRecordRepositoryImpl', () => {
 
     urlRecordRepository = container.get<UrlRecordRepository>(symbols.urlRecordRepository);
 
-    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
+    await mongoDbTestUtils.connect();
 
     await urlRecordTestUtils.truncate();
   });
@@ -30,7 +32,7 @@ describe('UrlRecordRepositoryImpl', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await mongoose.disconnect();
+    await mongoDbTestUtils.disconnect();
   });
 
   describe('create', () => {

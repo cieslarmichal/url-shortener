@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
 import { type FindLongUrlQueryHandler } from './findLongUrlQueryHandler.js';
@@ -6,12 +5,15 @@ import { ResourceNotFoundError } from '../../../../../common/errors/common/resou
 import { Application } from '../../../../../core/application.js';
 import { symbols } from '../../../symbols.js';
 import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecordRawEntityTestFactory/urlRecordRawEntityTestFactory.js';
+import { MongoDbTestUtils } from '../../../tests/utils/mongoDbTestUtils/mongoDbTestUtils.js';
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 
 describe('FindLongUrlQueryHandler', () => {
   let findLongUrlQueryHandler: FindLongUrlQueryHandler;
 
   const urlRecordTestUtils = new UrlRecordTestUtils();
+
+  const mongoDbTestUtils = new MongoDbTestUtils();
 
   const urlRecordEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
@@ -20,7 +22,7 @@ describe('FindLongUrlQueryHandler', () => {
 
     findLongUrlQueryHandler = container.get<FindLongUrlQueryHandler>(symbols.findLongUrlQueryHandler);
 
-    await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
+    await mongoDbTestUtils.connect();
 
     await urlRecordTestUtils.truncate();
   });
@@ -28,7 +30,7 @@ describe('FindLongUrlQueryHandler', () => {
   afterEach(async () => {
     await urlRecordTestUtils.truncate();
 
-    await mongoose.disconnect();
+    await mongoDbTestUtils.disconnect();
   });
 
   it('finds UrlRecord by long url', async () => {

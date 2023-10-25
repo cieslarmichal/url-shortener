@@ -2,17 +2,18 @@ version: '3.9'
 
 services:
   database:
-    container_name: url_shortener_mongo
+    container_name: mongodb
     restart: always
     image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: local
-      MONGO_INITDB_ROOT_PASSWORD: local
-      MONGO_INITDB_DATABASE: url_shortener
     ports:
       - '27017:27017'
     volumes:
-      - url-shortener-mongo-data:/data/db
+      - mongodb-data:/data/db
+      - mongodb-log:/var/log/mongodb
+      - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
 
 volumes:
-  url-shortener-mongo-data:
+  mongodb-data:
+    driver: local
+  mongodb-log:
+    driver: local

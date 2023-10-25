@@ -43,24 +43,16 @@ export class ConfigProvider {
     return serverPort;
   }
 
-  public static getMongoDatabaseHost(): string {
-    return this.getStringEnvVariable('MONGO_DATABASE_HOST');
-  }
-
-  public static getMongoDatabasePort(): number {
-    return 27017;
-  }
-
-  public static getMongoDatabaseName(): string {
-    return this.getStringEnvVariable('MONGO_DATABASE_NAME');
-  }
-
   public static getMongoDatabaseUser(): string {
     return this.getStringEnvVariable('MONGO_DATABASE_USER');
   }
 
   public static getMongoDatabasePassword(): string {
     return this.getStringEnvVariable('MONGO_DATABASE_PASSWORD');
+  }
+
+  public static getMongoDatabaseUri(): string {
+    return this.getStringEnvVariable('MONGO_DATABASE_URI');
   }
 
   public static getHashSecret(): string {
