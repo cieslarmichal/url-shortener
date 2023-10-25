@@ -10,12 +10,7 @@ export interface FindPayload {
   readonly longUrl?: string;
 }
 
-export interface FindByIdPayload {
-  readonly id: string;
-}
-
 export interface UrlRecordRepository {
   create(input: CreatePayload): Promise<UrlRecord>;
   find(input: FindPayload): Promise<UrlRecord | null>;
-  findById(input: FindByIdPayload): Promise<UrlRecord | null>;
 }

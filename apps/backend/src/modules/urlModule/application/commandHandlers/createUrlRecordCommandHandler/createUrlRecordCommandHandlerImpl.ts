@@ -44,7 +44,6 @@ export class CreateUrlRecordCommandHandlerImpl implements CreateUrlRecordCommand
       context: {
         longUrl: urlRecord.getLongUrl(),
         shortUrl: urlRecord.getShortUrl(),
-        urlRecordId: urlRecord.getId(),
       },
     });
 
@@ -65,7 +64,7 @@ export class CreateUrlRecordCommandHandlerImpl implements CreateUrlRecordCommand
     return shortUrl;
   }
 
-  private async getShortUrlPathParam(longUrl: string): Promise<string> {
+  public async getShortUrlPathParam(longUrl: string): Promise<string> {
     const hash = await this.hashService.hash(longUrl);
 
     const encodedHash = this.encoderService.encodeBase62(hash);

@@ -131,7 +131,6 @@ export class UrlHttpController implements HttpController {
 
   private mapUrlRecordToDto(urlRecord: UrlRecord): UrlRecordDto {
     return {
-      id: urlRecord.getId(),
       createdAt: urlRecord.getCreatedAt().toISOString(),
       longUrl: urlRecord.getLongUrl(),
       shortUrl: urlRecord.getShortUrl(),

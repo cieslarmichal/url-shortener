@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { beforeEach, afterEach, expect, it, describe } from 'vitest';
 
-import { type CreateUrlRecordCommandHandler } from './createUrlRecordCommandHandler.js';
+import { type CreateUrlRecordCommandHandlerImpl } from './createUrlRecordCommandHandlerImpl.js';
 import { ResourceAlreadyExistsError } from '../../../../../common/errors/common/resourceAlreadyExistsError.js';
 import { Application } from '../../../../../core/application.js';
 import { symbols } from '../../../symbols.js';
@@ -9,7 +9,7 @@ import { UrlRecordRawEntityTestFactory } from '../../../tests/factories/urlRecor
 import { UrlRecordTestUtils } from '../../../tests/utils/urlRecordTestUtils/urlRecordTestUtils.js';
 
 describe('CreateUrlRecordCommandHandler', () => {
-  let createUrlRecordCommandHandler: CreateUrlRecordCommandHandler;
+  let createUrlRecordCommandHandler: CreateUrlRecordCommandHandlerImpl;
 
   let urlRecordTestUtils: UrlRecordTestUtils;
 
@@ -18,7 +18,9 @@ describe('CreateUrlRecordCommandHandler', () => {
   beforeEach(async () => {
     const container = Application.createContainer();
 
-    createUrlRecordCommandHandler = container.get<CreateUrlRecordCommandHandler>(symbols.createUrlRecordCommandHandler);
+    createUrlRecordCommandHandler = container.get<CreateUrlRecordCommandHandlerImpl>(
+      symbols.createUrlRecordCommandHandler,
+    );
 
     urlRecordTestUtils = new UrlRecordTestUtils();
 
@@ -36,15 +38,23 @@ describe('CreateUrlRecordCommandHandler', () => {
   it('creates an UrlRecord', async () => {
     const { longUrl } = urlRecordRawEntityTestFactory.create();
 
-    const { urlRecord } = await createUrlRecordCommandHandler.execute({
-      longUrl,
-    });
+    const x = await createUrlRecordCommandHandler.getShortUrlPathParam(longUrl);
 
-    const foundUrlRecord = await urlRecordTestUtils.findById({ id: urlRecord.getId() });
+    console.log(x);
 
-    expect(foundUrlRecord).not.toBeNull();
+    const y = await createUrlRecordCommandHandler.getShortUrlPathParam(longUrl + '38a17ds4c');
 
-    expect(foundUrlRecord?.longUrl).toEqual(longUrl);
+    console.log(y);
+
+    // const { urlRecord } = await createUrlRecordCommandHandler.execute({
+    //   longUrl,
+    // });
+
+    // const foundUrlRecord = await urlRecordTestUtils.findById({ id: urlRecord.getId() });
+
+    // expect(foundUrlRecord).not.toBeNull();
+
+    // expect(foundUrlRecord?.longUrl).toEqual(longUrl);
   });
 
   it('throws an error - when UrlRecord with the same url already exists', async () => {

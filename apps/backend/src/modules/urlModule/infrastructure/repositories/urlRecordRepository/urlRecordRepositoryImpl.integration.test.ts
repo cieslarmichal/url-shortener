@@ -114,22 +114,4 @@ describe('UrlRecordRepositoryImpl', () => {
       expect(foundUrlRecord).toBeNull();
     });
   });
-
-  describe('findById', () => {
-    it('finds UrlRecord by id', async () => {
-      const urlRecord = await urlRecordTestUtils.createAndPersist();
-
-      const foundUrlRecord = await urlRecordRepository.findById({ id: urlRecord._id });
-
-      expect(foundUrlRecord).not.toBeNull();
-    });
-
-    it('throws an error if UrlRecord with given id does not exist', async () => {
-      const id = Generator.uuid();
-
-      const foundUrlRecord = await urlRecordRepository.findById({ id });
-
-      expect(foundUrlRecord).toBeNull();
-    });
-  });
 });

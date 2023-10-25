@@ -7,7 +7,6 @@ import {
   type FindPayload,
   type CreatePayload,
   type UrlRecordRepository,
-  type FindByIdPayload,
 } from '../../../domain/repositories/urlRecordRepository/urlRecordRepository.js';
 import { urlRecordRawEntityModel, type UrlRecordRawEntity } from '../../entities/urlRecordRawEntity.js';
 
@@ -53,27 +52,6 @@ export class UrlRecordRepositoryImpl implements UrlRecordRepository {
         longUrl,
         shortUrl,
       });
-    } catch (error) {
-      throw new RepositoryError({
-        entity: 'UrlRecord',
-        operation: 'find',
-      });
-    }
-
-    if (!rawEntity) {
-      return null;
-    }
-
-    return this.urlRecordMapper.mapToDomain(rawEntity);
-  }
-
-  public async findById(payload: FindByIdPayload): Promise<UrlRecord | null> {
-    const { id } = payload;
-
-    let rawEntity: UrlRecordRawEntity | null;
-
-    try {
-      rawEntity = await urlRecordRawEntityModel.findOne({ _id: id });
     } catch (error) {
       throw new RepositoryError({
         entity: 'UrlRecord',

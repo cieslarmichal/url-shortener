@@ -5,10 +5,9 @@ import { type UrlRecordRawEntity } from '../../../entities/urlRecordRawEntity.js
 
 export class UrlRecordMapperImpl implements UrlRecordMapper {
   public mapToDomain(entity: UrlRecordRawEntity): UrlRecord {
-    const { _id, createdAt, shortUrl, longUrl } = entity;
+    const { createdAt, shortUrl, longUrl } = entity;
 
     return new UrlRecord({
-      id: _id,
       createdAt,
       shortUrl,
       longUrl,

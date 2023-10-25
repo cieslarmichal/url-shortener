@@ -4,9 +4,6 @@ import { getModelForClass, prop } from '@typegoose/typegoose';
 
 export class UrlRecordRawEntity {
   @prop()
-  public _id!: string;
-
-  @prop()
   public createdAt!: Date;
 
   @prop()

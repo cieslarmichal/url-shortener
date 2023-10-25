@@ -18,7 +18,7 @@ describe('FindLongUrlQueryHandler', () => {
   beforeEach(async () => {
     const container = Application.createContainer();
 
-    findLongUrlQueryHandler = container.get<FindLongUrlQueryHandler>(symbols.findUrlRecordQueryHandler);
+    findLongUrlQueryHandler = container.get<FindLongUrlQueryHandler>(symbols.findLongUrlQueryHandler);
 
     await mongoose.connect('mongodb://localhost:27017/', { dbName: 'test' });
 
