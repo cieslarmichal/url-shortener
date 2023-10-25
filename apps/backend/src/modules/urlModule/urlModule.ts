@@ -3,6 +3,8 @@ import { type CreateUrlRecordCommandHandler } from './application/commandHandler
 import { CreateUrlRecordCommandHandlerImpl } from './application/commandHandlers/createUrlRecordCommandHandler/createUrlRecordCommandHandlerImpl.js';
 import { type FindLongUrlQueryHandler } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandler.js';
 import { FindLongUrlQueryHandlerImpl } from './application/queryHandlers/findLongUrlQueryHandler/findLongUrlQueryHandlerImpl.js';
+import { type EncoderService } from './application/services/encoderService/encoderService.js';
+import { EncoderServiceImpl } from './application/services/encoderService/encoderServiceImpl.js';
 import { type HashService } from './application/services/hashService/hashService.js';
 import { HashServiceImpl } from './application/services/hashService/hashServiceImpl.js';
 import { type UrlRecordRepository } from './domain/repositories/urlRecordRepository/urlRecordRepository.js';
@@ -15,7 +17,6 @@ import { coreSymbols } from '../../core/symbols.js';
 import { type DependencyInjectionContainer } from '../../libs/dependencyInjection/dependencyInjectionContainer.js';
 import { type DependencyInjectionModule } from '../../libs/dependencyInjection/dependencyInjectionModule.js';
 import { type LoggerService } from '../../libs/logger/services/loggerService/loggerService.js';
-import { type UuidService } from '../../libs/uuid/services/uuidService/uuidService.js';
 
 export class UrlModule implements DependencyInjectionModule {
   public constructor(private readonly config: UrlModuleConfig) {}
@@ -27,14 +28,12 @@ export class UrlModule implements DependencyInjectionModule {
 
     container.bind<UrlRecordRepository>(
       symbols.urlRecordRepository,
-      () =>
-        new UrlRecordRepositoryImpl(
-          container.get<UrlRecordMapper>(symbols.urlRecordMapper),
-          container.get<UuidService>(coreSymbols.uuidService),
-        ),
+      () => new UrlRecordRepositoryImpl(container.get<UrlRecordMapper>(symbols.urlRecordMapper)),
     );
 
     container.bind<HashService>(symbols.hashService, () => new HashServiceImpl());
+
+    container.bind<EncoderService>(symbols.encoderService, () => new EncoderServiceImpl());
 
     container.bind<CreateUrlRecordCommandHandler>(
       symbols.createUrlRecordCommandHandler,
@@ -44,6 +43,7 @@ export class UrlModule implements DependencyInjectionModule {
           container.get<HashService>(symbols.hashService),
           container.get<LoggerService>(coreSymbols.loggerService),
           container.get<UrlModuleConfig>(symbols.urlModuleConfig),
+          container.get<EncoderService>(symbols.encoderService),
         ),
     );
 

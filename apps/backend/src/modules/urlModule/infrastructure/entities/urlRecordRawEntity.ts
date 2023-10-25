@@ -1,16 +1,28 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import { Schema, model } from 'mongoose';
 
-import { getModelForClass, prop } from '@typegoose/typegoose';
-
-export class UrlRecordRawEntity {
-  @prop()
-  public createdAt!: Date;
-
-  @prop()
-  public shortUrl!: string;
-
-  @prop()
-  public longUrl!: string;
+export interface UrlRecordRawEntity {
+  readonly createdAt: Date;
+  readonly shortUrl: string;
+  readonly longUrl: string;
 }
 
-export const urlRecordRawEntityModel = getModelForClass(UrlRecordRawEntity);
+const urlRecordRawEntitySchema = new Schema<UrlRecordRawEntity>({
+  createdAt: {
+    type: Date,
+    required: true,
+  },
+  shortUrl: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+  },
+  longUrl: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+  },
+});
+
+export const urlRecordRawEntityModel = model<UrlRecordRawEntity>('UrlRecordRawEntity', urlRecordRawEntitySchema);

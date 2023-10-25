@@ -13,10 +13,6 @@ interface FindByShortUrlPayload {
   shortUrl: string;
 }
 
-interface FindByIdPayload {
-  id: string;
-}
-
 export class UrlRecordTestUtils {
   private readonly urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
@@ -38,14 +34,6 @@ export class UrlRecordTestUtils {
     const { shortUrl } = payload;
 
     const urlRecordRawEntity = await urlRecordRawEntityModel.findOne({ shortUrl });
-
-    return urlRecordRawEntity;
-  }
-
-  public async findById(payload: FindByIdPayload): Promise<UrlRecordRawEntity | null> {
-    const { id } = payload;
-
-    const urlRecordRawEntity = await urlRecordRawEntityModel.findById(id);
 
     return urlRecordRawEntity;
   }

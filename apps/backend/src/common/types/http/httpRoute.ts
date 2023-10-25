@@ -2,7 +2,6 @@ import { type TSchema } from '@sinclair/typebox';
 
 import { type HttpMethodName } from './httpMethodName.js';
 import { type HttpRouteHandler } from './httpRouteHandler.js';
-import { type SecurityMode } from './securityMode.js';
 
 export interface HttpRouteSchema {
   readonly request: {
@@ -18,7 +17,6 @@ export interface HttpRouteDraft {
   readonly path?: string;
   readonly handler: HttpRouteHandler;
   readonly schema: HttpRouteSchema;
-  readonly securityMode?: SecurityMode;
   readonly tags: string[];
   readonly description: string;
 }
@@ -28,12 +26,11 @@ export class HttpRoute {
   public readonly path: string;
   public readonly handler: HttpRouteHandler;
   public readonly schema: HttpRouteSchema;
-  public readonly securityMode?: SecurityMode;
   public readonly tags: string[];
   public readonly description: string;
 
   public constructor(draft: HttpRouteDraft) {
-    const { method, path, handler, schema, securityMode, tags, description } = draft;
+    const { method, path, handler, schema, tags, description } = draft;
 
     this.method = method;
 
@@ -46,9 +43,5 @@ export class HttpRoute {
     this.tags = tags;
 
     this.description = description;
-
-    if (securityMode) {
-      this.securityMode = securityMode;
-    }
   }
 }

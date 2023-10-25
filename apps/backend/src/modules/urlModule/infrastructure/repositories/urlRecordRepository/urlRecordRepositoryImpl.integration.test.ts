@@ -42,8 +42,8 @@ describe('UrlRecordRepositoryImpl', () => {
         shortUrl: urlRecord.shortUrl,
       });
 
-      const foundUrlRecord = (await urlRecordTestUtils.findById({
-        id: createdUrlRecord.getId(),
+      const foundUrlRecord = (await urlRecordTestUtils.findByShortUrl({
+        shortUrl: urlRecord.shortUrl,
       })) as UrlRecordRawEntity;
 
       expect(foundUrlRecord).not.toBeNull();
@@ -56,7 +56,6 @@ describe('UrlRecordRepositoryImpl', () => {
       });
 
       expect(foundUrlRecord).toMatchObject({
-        id: createdUrlRecord.getId(),
         createdAt: createdUrlRecord.getCreatedAt(),
         longUrl: createdUrlRecord.getLongUrl(),
         shortUrl: createdUrlRecord.getShortUrl(),
