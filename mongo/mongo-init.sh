@@ -1,27 +1,14 @@
 set -e
 
-mongo <<EOF
-db = db.getSiblingDB('sales')
+mongosh <<EOF
+use admin
 
-db.createUser({
-  user: 'sales',
-  pwd: '$SALES_PASSWORD',
-  roles: [{ role: 'readWrite', db: 'sales' }],
-});
-db.createCollection('receipts')
-db.createCollection('documents')
-db.createCollection('invoices')
+db.auth('root', 'root');
 
-db = db.getSiblingDB('warehouse')
+use url-shortener
 
-db.createUser({
-  user: 'warehouse',
-  pwd: '$WAREHOUSE_PASSWORD',
-  roles: [{ role: 'readWrite', db: 'warehouse' }],
-});
-db.createCollection('documents')
-db.createCollection('stocks')
-db.createCollection('invoices')
-db.createCollection('orders')
-
+db.createUser({ user: 'local', pwd: 'local', roles: [
+       { role: "userAdminAnyDatabase", db: "admin" },
+       { role: "readWriteAnyDatabase", db: "admin" }
+     ] });
 EOF
