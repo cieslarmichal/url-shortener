@@ -1,3 +1,4 @@
+import { Kafka } from 'kafkajs';
 import mongoose from 'mongoose';
 
 import { ConfigProvider } from './configProvider.js';
@@ -35,6 +36,22 @@ export class Application {
     const databaseUri = ConfigProvider.getMongoDatabaseUri();
 
     await mongoose.connect(databaseUri);
+
+    const kafka = new Kafka({
+      clientId: 'url-shortener-api',
+      brokers: ['localhost:9093'],
+    });
+
+    const producer = kafka.producer({
+      allowAutoTopicCreation: true,
+    });
+
+    await producer.connect();
+
+    await producer.send({
+      topic: 'url-clicks',
+      messages: [{ value: 'clicks!' }],
+    });
 
     const serverHost = ConfigProvider.getServerHost();
 
