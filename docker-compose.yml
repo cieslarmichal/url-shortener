@@ -5,10 +5,12 @@ services:
     container_name: mongodb
     restart: always
     image: mongo:latest
+    env_file:
+      - .env
     environment:
-      MONGO_INITDB_DATABASE: url-shortener
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DATABASE_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DATABASE_ROOT_PASSWORD}
     ports:
       - '27017:27017'
     volumes:

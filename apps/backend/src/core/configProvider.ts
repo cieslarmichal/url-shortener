@@ -43,14 +43,6 @@ export class ConfigProvider {
     return serverPort;
   }
 
-  public static getMongoDatabaseUser(): string {
-    return this.getStringEnvVariable('MONGO_DATABASE_USER');
-  }
-
-  public static getMongoDatabasePassword(): string {
-    return this.getStringEnvVariable('MONGO_DATABASE_PASSWORD');
-  }
-
   public static getMongoDatabaseUri(): string {
     return this.getStringEnvVariable('MONGO_DATABASE_URI');
   }
