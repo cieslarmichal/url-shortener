@@ -1,10 +1,10 @@
 import { type EncoderService } from './encoderService.js';
 
 export class EncoderServiceImpl implements EncoderService {
-  private readonly characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  private readonly base62Characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
   public encodeBase62(decimalInput: bigint): string {
-    const base62 = 62n;
+    const base62 = BigInt(this.base62Characters.length);
 
     let encoded = '';
 
@@ -13,7 +13,7 @@ export class EncoderServiceImpl implements EncoderService {
 
       decimalInput /= base62;
 
-      encoded = this.characters[remainder] + encoded;
+      encoded = this.base62Characters[remainder] + encoded;
     }
 
     return encoded;
