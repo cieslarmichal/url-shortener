@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest';
 import { EncoderServiceImpl } from './encoderServiceImpl.js';
 
 describe('EncoderServiceImpl', () => {
-  const encoderServiceImpl: EncoderServiceImpl = new EncoderServiceImpl();
+  const encoderServiceImpl = new EncoderServiceImpl();
 
   it('encodes decimal number to base62', async () => {
     const input = 300425841013440728375110153172093501440n;
