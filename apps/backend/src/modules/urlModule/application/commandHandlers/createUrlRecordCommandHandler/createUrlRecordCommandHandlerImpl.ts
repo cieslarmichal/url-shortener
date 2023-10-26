@@ -65,9 +65,11 @@ export class CreateUrlRecordCommandHandlerImpl implements CreateUrlRecordCommand
   }
 
   public async getShortUrlPathParam(longUrl: string): Promise<string> {
-    const hash = await this.hashService.hash(longUrl);
+    const hashHex = await this.hashService.hash(longUrl);
 
-    const encodedHash = this.encoderService.encodeBase62(hash);
+    const hashDecimal = BigInt(parseInt(hashHex, 16));
+
+    const encodedHash = this.encoderService.encodeBase62(hashDecimal);
 
     return encodedHash.slice(0, 7);
   }

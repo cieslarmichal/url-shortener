@@ -1,3 +1,3 @@
 export interface EncoderService {
-  encodeBase62(hexString: string): string;
+  encodeBase62(decimalInput: bigint): string;
 }
