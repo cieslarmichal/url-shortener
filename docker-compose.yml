@@ -2,7 +2,6 @@ version: '3.9'
 
 services:
   database:
-    container_name: mongodb
     restart: always
     image: mongo:latest
     env_file:
@@ -18,6 +17,7 @@ services:
       - mongodb-log:/var/log/mongodb
       - ./mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
 
+  # sudo docker-compose rm -vfs
   zookeeper:
     restart: always
     image: docker.io/bitnami/zookeeper:3.8
