@@ -62,7 +62,7 @@ export class HttpServer {
     });
 
     await this.fastifyInstance.register(fastifyRateLimit, {
-      max: 10,
+      max: 15,
       timeWindow: '1m',
     });
 
