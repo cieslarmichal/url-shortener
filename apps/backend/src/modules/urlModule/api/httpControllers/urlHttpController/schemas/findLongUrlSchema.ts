@@ -6,10 +6,6 @@ export const findLongUrlPathParametersSchema = Type.Object({
 
 export type FindLongUrlPathParameters = Static<typeof findLongUrlPathParametersSchema>;
 
-export const findLongUrlResponseMovedTemporarilyHeadersSchema = Type.Object({
-  longUrl: Type.String(),
-});
+export const findLongUrlResponseMovedTemporarilyBodySchema = Type.Null();
 
-export type FindLongUrlResponseMovedTemporarilyHeaders = Static<
-  typeof findLongUrlResponseMovedTemporarilyHeadersSchema
->;
+export type FindLongUrlResponseMovedTemporarilyBody = Static<typeof findLongUrlResponseMovedTemporarilyBodySchema>;

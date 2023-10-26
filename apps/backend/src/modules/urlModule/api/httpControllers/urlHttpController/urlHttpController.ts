@@ -6,19 +6,20 @@ import {
 } from './schemas/createUrlRecordSchema.js';
 import {
   findLongUrlPathParametersSchema,
-  findLongUrlResponseMovedTemporarilyHeadersSchema,
   type FindLongUrlPathParameters,
-  type FindLongUrlResponseMovedTemporarilyHeaders,
+  type FindLongUrlResponseMovedTemporarilyBody,
+  findLongUrlResponseMovedTemporarilyBodySchema,
 } from './schemas/findLongUrlSchema.js';
 import { type UrlRecordDto } from './schemas/urlRecordDto.js';
 import { ResourceNotFoundError } from '../../../../../common/errors/common/resourceNotFoundError.js';
 import { type HttpController } from '../../../../../common/types/http/httpController.js';
+import { HttpHeader } from '../../../../../common/types/http/httpHeader.js';
 import { HttpMethodName } from '../../../../../common/types/http/httpMethodName.js';
 import { type HttpRequest } from '../../../../../common/types/http/httpRequest.js';
 import {
   type HttpCreatedResponse,
-  type HttpOkResponse,
   type HttpNotFoundResponse,
+  type HttpMovedTemporarilyResponse,
 } from '../../../../../common/types/http/httpResponse.js';
 import { HttpRoute } from '../../../../../common/types/http/httpRoute.js';
 import { HttpStatusCode } from '../../../../../common/types/http/httpStatusCode.js';
@@ -63,15 +64,15 @@ export class UrlHttpController implements HttpController {
       }),
       new HttpRoute({
         method: HttpMethodName.get,
-        path: ':urlPathParam',
+        path: ':shortUrlPathParam',
         handler: this.findUrlRecord.bind(this),
         schema: {
           request: {
             pathParams: findLongUrlPathParametersSchema,
           },
           response: {
-            [HttpStatusCode.ok]: {
-              schema: findLongUrlResponseMovedTemporarilyHeadersSchema,
+            [HttpStatusCode.movedTemporarily]: {
+              schema: findLongUrlResponseMovedTemporarilyBodySchema,
               description: 'Long url found.',
             },
             [HttpStatusCode.notFound]: {
@@ -103,7 +104,9 @@ export class UrlHttpController implements HttpController {
 
   private async findUrlRecord(
     request: HttpRequest<undefined, undefined, FindLongUrlPathParameters>,
-  ): Promise<HttpOkResponse<FindLongUrlResponseMovedTemporarilyHeaders> | HttpNotFoundResponse<ResponseErrorBody>> {
+  ): Promise<
+    HttpMovedTemporarilyResponse<FindLongUrlResponseMovedTemporarilyBody> | HttpNotFoundResponse<ResponseErrorBody>
+  > {
     const { shortUrlPathParam } = request.pathParams;
 
     const { domainUrl } = this.config;
@@ -114,8 +117,11 @@ export class UrlHttpController implements HttpController {
       const { longUrl } = await this.findLongUrlQueryHandler.execute({ shortUrl });
 
       return {
-        statusCode: HttpStatusCode.ok,
-        body: { longUrl },
+        statusCode: HttpStatusCode.movedTemporarily,
+        body: null,
+        headers: {
+          [HttpHeader.location]: longUrl,
+        },
       };
     } catch (error) {
       if (error instanceof ResourceNotFoundError) {

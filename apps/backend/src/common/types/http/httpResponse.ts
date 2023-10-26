@@ -3,6 +3,7 @@ import { type HttpStatusCode } from './httpStatusCode.js';
 export interface HttpResponse<Body = unknown> {
   readonly statusCode: HttpStatusCode;
   readonly body: Body;
+  readonly headers?: Record<string, string>;
 }
 
 export interface HttpOkResponse<Body = unknown> extends HttpResponse<Body> {
@@ -15,6 +16,10 @@ export interface HttpCreatedResponse<Body = unknown> extends HttpResponse<Body> 
 
 export interface HttpNoContentResponse<Body = unknown> extends HttpResponse<Body> {
   readonly statusCode: typeof HttpStatusCode.noContent;
+}
+
+export interface HttpMovedTemporarilyResponse<Body = unknown> extends HttpResponse<Body> {
+  readonly statusCode: typeof HttpStatusCode.movedTemporarily;
 }
 
 export interface HttpForbiddenResponse<Body = unknown> extends HttpResponse<Body> {

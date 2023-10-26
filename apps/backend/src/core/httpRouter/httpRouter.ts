@@ -8,6 +8,7 @@ import { BaseError } from '../../common/errors/base/baseError.js';
 import { DomainError } from '../../common/errors/base/domainError.js';
 import { type HttpController } from '../../common/types/http/httpController.js';
 import { HttpHeader } from '../../common/types/http/httpHeader.js';
+import { HttpMediaType } from '../../common/types/http/httpMediaType.js';
 import { type HttpRouteSchema, type HttpRoute } from '../../common/types/http/httpRoute.js';
 import { HttpStatusCode } from '../../common/types/http/httpStatusCode.js';
 import { type DependencyInjectionContainer } from '../../libs/dependencyInjection/dependencyInjectionContainer.js';
@@ -78,7 +79,11 @@ export class HttpRouter {
             },
           });
 
-          const { statusCode, body: responseBody } = await httpRoute.handler({
+          const {
+            statusCode,
+            body: responseBody,
+            headers: responseHeaders,
+          } = await httpRoute.handler({
             body: fastifyRequest.body,
             pathParams: fastifyRequest.params,
             queryParams: fastifyRequest.query,
@@ -87,8 +92,12 @@ export class HttpRouter {
 
           fastifyReply.status(statusCode);
 
+          if (responseHeaders) {
+            fastifyReply.headers(responseHeaders);
+          }
+
           if (responseBody) {
-            fastifyReply.header(HttpHeader.contentType, 'application/json');
+            fastifyReply.header(HttpHeader.contentType, HttpMediaType.applicationJson);
 
             fastifyReply.send(responseBody);
           } else {
@@ -103,6 +112,7 @@ export class HttpRouter {
               method,
               statusCode,
               body: responseBody,
+              headers: responseHeaders,
               time: new Date().getTime() - requestDate.getTime(),
             },
           });

@@ -4,6 +4,7 @@ export enum HttpStatusCode {
   ok = StatusCodes.OK,
   accepted = StatusCodes.ACCEPTED,
   created = StatusCodes.CREATED,
+  movedTemporarily = StatusCodes.MOVED_TEMPORARILY,
   noContent = StatusCodes.NO_CONTENT,
   badRequest = StatusCodes.BAD_REQUEST,
   unauthorized = StatusCodes.UNAUTHORIZED,
