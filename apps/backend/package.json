@@ -14,22 +14,18 @@
   },
   "dependencies": {
     "@fastify/type-provider-typebox": "^3.5.0",
-    "@sinclair/typebox": "^0.31.18",
-    "dotenv": "^16.3.1",
+    "@sinclair/typebox": "^0.31.20",
     "fastify": "^4.24.3",
     "http-status-codes": "^2.3.0",
     "inversify": "^6.0.2",
     "mongoose": "^7.6.3",
-    "pino": "^8.16.0",
+    "pino": "^8.16.1",
     "pino-pretty": "^10.2.3",
-    "uuid": "^9.0.1",
     "validator": "^13.11.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.8.7",
-    "@types/uuid": "^9.0.6",
     "@types/validator": "^13.11.5"
   }
 }
