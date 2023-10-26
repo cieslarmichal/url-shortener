@@ -7,6 +7,8 @@ import { coreSymbols, symbols } from './symbols.js';
 import { type DependencyInjectionContainer } from '../libs/dependencyInjection/dependencyInjectionContainer.js';
 import { DependencyInjectionContainerFactory } from '../libs/dependencyInjection/dependencyInjectionContainerFactory.js';
 import { type DependencyInjectionModule } from '../libs/dependencyInjection/dependencyInjectionModule.js';
+import { KafkaProducerServiceFactory } from '../libs/kafka/factories/kafkaProducerServiceFactory/kafkaProducerServiceFactory.js';
+import { type KafkaProducerService } from '../libs/kafka/services/kafkaProducerService/kafkaProducerService.js';
 import { LoggerServiceFactory } from '../libs/logger/factories/loggerServiceFactory/loggerServiceFactory.js';
 import { type LoggerService } from '../libs/logger/services/loggerService/loggerService.js';
 import { UrlModule } from '../modules/urlModule/urlModule.js';
@@ -17,6 +19,10 @@ export class Application {
 
     const loggerLevel = ConfigProvider.getLoggerLevel();
 
+    const kafkaBroker = ConfigProvider.getKafkaBroker();
+
+    const kafkaClientId = ConfigProvider.getKafkaClientId();
+
     const modules: DependencyInjectionModule[] = [
       new UrlModule({
         domainUrl,
@@ -26,6 +32,13 @@ export class Application {
     const container = DependencyInjectionContainerFactory.create({ modules });
 
     container.bind<LoggerService>(symbols.loggerService, () => LoggerServiceFactory.create({ loggerLevel }));
+
+    container.bind<KafkaProducerService>(symbols.kafkaProducerService, () =>
+      KafkaProducerServiceFactory.create({
+        broker: kafkaBroker,
+        clientId: kafkaClientId,
+      }),
+    );
 
     return container;
   }

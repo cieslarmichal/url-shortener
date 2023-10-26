@@ -50,4 +50,12 @@ export class ConfigProvider {
   public static getDomainUrl(): string {
     return this.getStringEnvVariable('DOMAIN_URL');
   }
+
+  public static getKafkaBroker(): string {
+    return this.getStringEnvVariable('KAFKA_BROKER');
+  }
+
+  public static getKafkaClientId(): string {
+    return this.getStringEnvVariable('KAFKA_CLIENT_ID');
+  }
 }
