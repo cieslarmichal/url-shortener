@@ -3,6 +3,7 @@
 
 import { fastifyCors } from '@fastify/cors';
 import { fastifyHelmet } from '@fastify/helmet';
+import { fastifyRateLimit } from '@fastify/rate-limit';
 import { fastifySwagger } from '@fastify/swagger';
 import { fastifySwaggerUi } from '@fastify/swagger-ui';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
@@ -58,6 +59,11 @@ export class HttpServer {
       origin: '*',
       methods: '*',
       allowedHeaders: '*',
+    });
+
+    await this.fastifyInstance.register(fastifyRateLimit, {
+      max: 10,
+      timeWindow: '1m',
     });
 
     this.fastifyInstance.setSerializerCompiler(() => {
