@@ -6,6 +6,7 @@ services:
     restart: always
     image: mongo:latest
     environment:
+      MONGO_INITDB_DATABASE: url-shortener
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:

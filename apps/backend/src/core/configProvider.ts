@@ -55,10 +55,6 @@ export class ConfigProvider {
     return this.getStringEnvVariable('MONGO_DATABASE_URI');
   }
 
-  public static getHashSecret(): string {
-    return this.getStringEnvVariable('HASH_SECRET');
-  }
-
   public static getDomainUrl(): string {
     return this.getStringEnvVariable('DOMAIN_URL');
   }

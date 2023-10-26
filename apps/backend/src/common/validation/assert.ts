@@ -1,5 +1,5 @@
-import { InputNotValidError } from '../errors/common/inputNotValidError.js';
 import { Validator } from './validator.js';
+import { InputNotValidError } from '../errors/common/inputNotValidError.js';
 
 export enum StringFormat {
   uuid = 'uuid',
@@ -30,7 +30,7 @@ export class Assert {
   public static isNotEmptyString(value: unknown): asserts value is string {
     if (!Validator.isNonEmptyString(value)) {
       throw new InputNotValidError({
-        reason: `Input is not longer than or equal ${length} characters.`,
+        reason: `Input string is empty.`,
         value,
       });
     }

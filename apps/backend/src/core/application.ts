@@ -12,15 +12,12 @@ import { UrlModule } from '../modules/urlModule/urlModule.js';
 
 export class Application {
   public static createContainer(): DependencyInjectionContainer {
-    const hashSecret = ConfigProvider.getHashSecret();
-
     const domainUrl = ConfigProvider.getDomainUrl();
 
     const loggerLevel = ConfigProvider.getLoggerLevel();
 
     const modules: DependencyInjectionModule[] = [
       new UrlModule({
-        hashSecret,
         domainUrl,
       }),
     ];
