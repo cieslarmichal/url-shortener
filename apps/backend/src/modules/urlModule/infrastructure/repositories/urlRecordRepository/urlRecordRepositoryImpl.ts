@@ -40,11 +40,24 @@ export class UrlRecordRepositoryImpl implements UrlRecordRepository {
 
     let rawEntity: UrlRecordRawEntity | null;
 
-    try {
-      rawEntity = await urlRecordRawEntityModel.findOne({
-        longUrl,
+    let findOnePayload: Partial<UrlRecordRawEntity> = {};
+
+    if (shortUrl) {
+      findOnePayload = {
+        ...findOnePayload,
         shortUrl,
-      });
+      };
+    }
+
+    if (longUrl) {
+      findOnePayload = {
+        ...findOnePayload,
+        longUrl,
+      };
+    }
+
+    try {
+      rawEntity = await urlRecordRawEntityModel.findOne(findOnePayload);
     } catch (error) {
       throw new RepositoryError({
         entity: 'UrlRecord',

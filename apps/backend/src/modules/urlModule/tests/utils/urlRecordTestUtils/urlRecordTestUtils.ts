@@ -13,6 +13,10 @@ interface FindByShortUrlPayload {
   shortUrl: string;
 }
 
+interface FindByLongUrlPayload {
+  longUrl: string;
+}
+
 export class UrlRecordTestUtils {
   private readonly urlRecordRawEntityTestFactory = new UrlRecordRawEntityTestFactory();
 
@@ -36,6 +40,20 @@ export class UrlRecordTestUtils {
     const urlRecordRawEntity = await urlRecordRawEntityModel.findOne({ shortUrl });
 
     return urlRecordRawEntity;
+  }
+
+  public async findByLongUrl(payload: FindByLongUrlPayload): Promise<UrlRecordRawEntity | null> {
+    const { longUrl } = payload;
+
+    const urlRecordRawEntity = await urlRecordRawEntityModel.findOne({ longUrl });
+
+    return urlRecordRawEntity;
+  }
+
+  public async findAll(): Promise<UrlRecordRawEntity[]> {
+    const urlRecordRawEntities = await urlRecordRawEntityModel.find();
+
+    return urlRecordRawEntities;
   }
 
   public async truncate(): Promise<void> {
