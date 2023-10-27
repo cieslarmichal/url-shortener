@@ -63,7 +63,18 @@ export class Application {
 
     await producer.send({
       topic: 'url-clicks',
-      messages: [{ value: 'clicks!' }],
+      messages: [
+        {
+          value: JSON.stringify({
+            id: '1',
+            data: {
+              shortUrl: 'url',
+              longUrl: 'url',
+              createdAt: new Date().toISOString(),
+            },
+          }),
+        },
+      ],
     });
 
     const serverHost = ConfigProvider.getServerHost();

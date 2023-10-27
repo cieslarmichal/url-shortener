@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  database:
+  mongodb:
     restart: always
     image: mongo:latest
     env_file:
@@ -63,16 +63,16 @@ services:
   #     - elasticsearch
   #   depends_on:
   #     - elasticsearch
-  # logstash:
-  #   image: logstash:7.16.1
-  #   volumes:
-  #     - ./logstash:/config-dir
-  #   command: logstash -f /config-dir/logstash.conf
-  #   links:
-  #     - elasticsearch
-  #   depends_on:
-  #     - elasticsearch
-  #     - kafka
+  logstash:
+    image: logstash:7.16.1
+    volumes:
+      - ./logstash:/config-dir
+    command: logstash -f /config-dir/logstash.conf
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+      - kafka
 
 volumes:
   mongodb-data:
