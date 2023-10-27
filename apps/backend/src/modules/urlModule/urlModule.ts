@@ -16,7 +16,9 @@ import { type UrlModuleConfig } from './urlModuleConfig.js';
 import { coreSymbols } from '../../core/symbols.js';
 import { type DependencyInjectionContainer } from '../../libs/dependencyInjection/dependencyInjectionContainer.js';
 import { type DependencyInjectionModule } from '../../libs/dependencyInjection/dependencyInjectionModule.js';
+import { type KafkaProducerService } from '../../libs/kafka/services/kafkaProducerService/kafkaProducerService.js';
 import { type LoggerService } from '../../libs/logger/services/loggerService/loggerService.js';
+import { type UuidService } from '../../libs/uuid/services/uuidService/uuidService.js';
 
 export class UrlModule implements DependencyInjectionModule {
   public constructor(private readonly config: UrlModuleConfig) {}
@@ -49,7 +51,12 @@ export class UrlModule implements DependencyInjectionModule {
 
     container.bind<FindLongUrlQueryHandler>(
       symbols.findLongUrlQueryHandler,
-      () => new FindLongUrlQueryHandlerImpl(container.get<UrlRecordRepository>(symbols.urlRecordRepository)),
+      () =>
+        new FindLongUrlQueryHandlerImpl(
+          container.get<UrlRecordRepository>(symbols.urlRecordRepository),
+          container.get<UuidService>(coreSymbols.uuidService),
+          container.get<KafkaProducerService>(coreSymbols.kafkaProducerService),
+        ),
     );
 
     container.bind<UrlHttpController>(

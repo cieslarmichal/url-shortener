@@ -1,8 +1,6 @@
-export type Message = { value: string };
-
 export interface SendMessagePayload {
   readonly topic: string;
-  readonly message: Message;
+  readonly message: string;
 }
 
 export interface KafkaProducerService {

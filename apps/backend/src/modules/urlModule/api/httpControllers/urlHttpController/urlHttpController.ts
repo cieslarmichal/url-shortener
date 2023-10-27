@@ -109,12 +109,17 @@ export class UrlHttpController implements HttpController {
   > {
     const { shortUrlPathParam } = request.pathParams;
 
+    const host = request.headers[HttpHeader.host] as string;
+
     const { domainUrl } = this.config;
 
     const shortUrl = `${domainUrl}/${shortUrlPathParam}`;
 
     try {
-      const { longUrl } = await this.findLongUrlQueryHandler.execute({ shortUrl });
+      const { longUrl } = await this.findLongUrlQueryHandler.execute({
+        shortUrl,
+        clientIp: host,
+      });
 
       return {
         statusCode: HttpStatusCode.movedTemporarily,

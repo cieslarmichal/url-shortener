@@ -1,4 +1,3 @@
-import { Kafka } from 'kafkajs';
 import mongoose from 'mongoose';
 
 import { ConfigProvider } from './configProvider.js';
@@ -11,6 +10,8 @@ import { KafkaProducerServiceFactory } from '../libs/kafka/factories/kafkaProduc
 import { type KafkaProducerService } from '../libs/kafka/services/kafkaProducerService/kafkaProducerService.js';
 import { LoggerServiceFactory } from '../libs/logger/factories/loggerServiceFactory/loggerServiceFactory.js';
 import { type LoggerService } from '../libs/logger/services/loggerService/loggerService.js';
+import { type UuidService } from '../libs/uuid/services/uuidService/uuidService.js';
+import { UuidServiceImpl } from '../libs/uuid/services/uuidService/uuidServiceImpl.js';
 import { UrlModule } from '../modules/urlModule/urlModule.js';
 
 export class Application {
@@ -33,6 +34,8 @@ export class Application {
 
     container.bind<LoggerService>(symbols.loggerService, () => LoggerServiceFactory.create({ loggerLevel }));
 
+    container.bind<UuidService>(symbols.uuidService, () => new UuidServiceImpl());
+
     container.bind<KafkaProducerService>(symbols.kafkaProducerService, () =>
       KafkaProducerServiceFactory.create({
         broker: kafkaBroker,
@@ -49,33 +52,6 @@ export class Application {
     const databaseUri = ConfigProvider.getMongoDatabaseUri();
 
     await mongoose.connect(databaseUri);
-
-    const kafka = new Kafka({
-      clientId: 'url-shortener-api',
-      brokers: ['localhost:9093'],
-    });
-
-    const producer = kafka.producer({
-      allowAutoTopicCreation: true,
-    });
-
-    await producer.connect();
-
-    await producer.send({
-      topic: 'url-clicks',
-      messages: [
-        {
-          value: JSON.stringify({
-            id: '1',
-            data: {
-              shortUrl: 'url',
-              longUrl: 'url',
-              createdAt: new Date().toISOString(),
-            },
-          }),
-        },
-      ],
-    });
 
     const serverHost = ConfigProvider.getServerHost();
 

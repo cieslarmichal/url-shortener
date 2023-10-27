@@ -3,4 +3,5 @@ export enum HttpHeader {
   contentType = 'Content-Type',
   accept = 'Accept',
   location = 'Location',
+  host = 'Host',
 }

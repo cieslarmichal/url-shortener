@@ -22,7 +22,7 @@ export class KafkaProducerServiceImpl implements KafkaProducerService {
 
     await this.producer.send({
       topic,
-      messages: [message],
+      messages: [{ value: message }],
     });
   }
 
