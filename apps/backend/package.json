@@ -23,11 +23,13 @@
     "mongoose": "^7.6.3",
     "pino": "^8.16.1",
     "pino-pretty": "^10.2.3",
+    "uuid": "^9.0.1",
     "validator": "^13.11.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
     "@types/mongoose": "^5.11.97",
+    "@types/uuid": "^9.0.4",
     "@types/validator": "^13.11.5"
   }
 }

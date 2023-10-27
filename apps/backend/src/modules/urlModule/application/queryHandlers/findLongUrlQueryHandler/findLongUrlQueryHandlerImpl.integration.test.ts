@@ -36,7 +36,12 @@ describe('FindLongUrlQueryHandler', () => {
   it('finds UrlRecord by long url', async () => {
     const urlRecord = await urlRecordTestUtils.createAndPersist();
 
-    const { longUrl } = await findLongUrlQueryHandler.execute({ shortUrl: urlRecord.shortUrl });
+    const clientIp = 'localhost:8080';
+
+    const { longUrl } = await findLongUrlQueryHandler.execute({
+      shortUrl: urlRecord.shortUrl,
+      clientIp,
+    });
 
     expect(longUrl).toEqual(urlRecord.longUrl);
   });
@@ -44,8 +49,13 @@ describe('FindLongUrlQueryHandler', () => {
   it('throws an error if UrlRecord with given short url does not exist', async () => {
     const { shortUrl } = urlRecordEntityTestFactory.create();
 
+    const clientIp = 'localhost:8080';
+
     try {
-      await findLongUrlQueryHandler.execute({ shortUrl });
+      await findLongUrlQueryHandler.execute({
+        shortUrl,
+        clientIp,
+      });
     } catch (error) {
       expect(error).toBeInstanceOf(ResourceNotFoundError);
 
