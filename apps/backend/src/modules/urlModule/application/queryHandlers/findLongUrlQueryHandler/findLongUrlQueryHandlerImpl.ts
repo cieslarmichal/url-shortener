@@ -25,6 +25,8 @@ export class FindLongUrlQueryHandlerImpl implements FindLongUrlQueryHandler {
       });
     }
 
+    console.log({ clientIp });
+
     await this.kafkaProducerService.sendMessage({
       topic: this.urlClicksKafkaTopic,
       message: JSON.stringify({

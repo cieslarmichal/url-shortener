@@ -90,11 +90,9 @@ export class UrlHttpController implements HttpController {
   private async createUrlRecord(
     request: HttpRequest<CreateUrlRecordBody>,
   ): Promise<HttpCreatedResponse<CreateUrlRecordResponseCreatedBody>> {
-    const { longUrl } = request.body;
+    const { url } = request.body;
 
-    const { urlRecord } = await this.createUrlRecordCommandHandler.execute({
-      longUrl,
-    });
+    const { urlRecord } = await this.createUrlRecordCommandHandler.execute({ longUrl: url });
 
     return {
       statusCode: HttpStatusCode.created,
@@ -109,7 +107,7 @@ export class UrlHttpController implements HttpController {
   > {
     const { shortUrlPathParam } = request.pathParams;
 
-    const host = request.headers[HttpHeader.host] as string;
+    const host = request.headers[HttpHeader.host] || (request.headers[HttpHeader.host.toLowerCase()] as string);
 
     const { domainUrl } = this.config;
 
