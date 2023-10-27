@@ -56,6 +56,6 @@ export class ConfigProvider {
   }
 
   public static getKafkaClientId(): string {
-    return this.getStringEnvVariable('KAFKA_CLIENT_ID');
+    return 'url-shortener-app';
   }
 }
