@@ -1,3 +1,5 @@
-# url-shortener
+# URL shortener
 
-URL shortener built with Node.js, Fastify, MongoDB, Kafka and ELK Stack.
+#### System architecture diagram:
+
+![Schema](docs/system-diagram.png)
